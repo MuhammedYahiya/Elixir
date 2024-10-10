@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const patientRoute = require('./routes/patientRouter')
 require('dotenv').config();
 
 const app = express(); // Initialize express app
@@ -8,6 +9,8 @@ const app = express(); // Initialize express app
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use("/api", patientRoute);
 
 // Connect to MongoDB
 connectDB();
