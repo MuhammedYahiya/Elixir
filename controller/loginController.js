@@ -3,6 +3,7 @@ const User = require("../models/users");
 const Patient = require("../models/patient");
 const Doctor = require("../models/doctors");
 const jwt = require("jsonwebtoken");
+const lab = require("../models/lab");
 
 exports.login = async (req, res) => {
   const { unique_id, password } = req.body;
@@ -36,6 +37,8 @@ exports.login = async (req, res) => {
       userInfo = await Patient.findOne({ unique_id });
     } else if (user.user_type === "Doctor") {
       userInfo = await Doctor.findOne({ unique_id});
+    } else if(user.user_type === "Lab"){
+      userInfo = await lab.findOne({unique_id})
     }
 
     return res.status(200).json({

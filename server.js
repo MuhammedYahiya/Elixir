@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 const patientRoute = require("./routes/patientRouter");
 const doctorRoute = require("./routes/doctorRouter");
 const authRoute = require('./routes/authRouter')
+const labRoute = require('./routes/labRouter')
 require("dotenv").config();
 
 const app = express(); // Initialize express app
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api", patientRoute);
 app.use("/api", doctorRoute);
 app.use("/api", authRoute);
+app.use("/api",labRoute)
 
 // Connect to MongoDB
 connectDB();
