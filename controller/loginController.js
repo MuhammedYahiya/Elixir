@@ -23,16 +23,19 @@ exports.login = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, user_type: user.user_type },
+      { id: user.unique_id, user_type: user.user_type },
       process.env.JWT_SECRET,
       { expiresIn: "1h" }
     );
+    console.log(user.user_type);
+    
+    
 
     let userInfo = null;
     if (user.user_type === "Patient") {
       userInfo = await Patient.findOne({ unique_id });
     } else if (user.user_type === "Doctor") {
-      userInfo = await Doctor.findOne({ licenseID: unique_id });
+      userInfo = await Doctor.findOne({ unique_id});
     }
 
     return res.status(200).json({

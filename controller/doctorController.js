@@ -5,11 +5,11 @@ const Doctor = require("../models/doctors");
 
 
 exports.doctorSignup = async (req, res) => {
-  const { licenseID, fullName, email, age, gender, specialization, password } =
+  const { unique_id, fullName, email, age, gender, specialization, password } =
     req.body;
 
   try {
-    const existingUser = await User.findOne({ unique_id: licenseID });
+    const existingUser = await User.findOne({ unique_id: unique_id });
     if (existingUser) {
       return res
         .status(400)
@@ -23,7 +23,7 @@ exports.doctorSignup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      unique_id: licenseID,
+      unique_id: unique_id,
       user_type: "Doctor",
       password: hashedPassword,
     });
@@ -31,7 +31,7 @@ exports.doctorSignup = async (req, res) => {
     await newUser.save();
 
     const newDoctor = new Doctor({
-      licenseID,
+      unique_id,
       fullName,
       email,
       age,

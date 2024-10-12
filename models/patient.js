@@ -35,6 +35,10 @@ const patientSchema = new mongoose.Schema({
     trim: true,
     validate: [validator.isEmail, "Invalid email address"],
   },
+  is_profile_public: {
+    type: Boolean,
+    default: false, 
+  },
   privacy_settings: {
     can_view: [
       {
