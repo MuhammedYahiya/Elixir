@@ -3,6 +3,7 @@ const User = require("../models/users");
 const Doctor = require("../models/doctors");
 const Patient = require("../models/patient");
 const MedicalRecord = require("../models/medicalRecord");
+const { v4: uuidv4 } = require('uuid');
 
 
 
@@ -61,31 +62,44 @@ exports.createMedicalRecord = async (req, res) => {
   const doctor_id = req.params.doctor_id;
 
   try {
+   
+    if (!patient_id || !record_type || !description || !doctor_id) {
+      return res.status(400).json({ message: "Missing required fields", success: false });
+    }
+
+    
     const patient = await Patient.findOne({ unique_id: patient_id });
     if (!patient) {
       return res.status(404).json({ message: "Patient not found", success: false });
     }
 
+    
     const doctor = await Doctor.findOne({ unique_id: doctor_id });
     if (!doctor) {
       return res.status(404).json({ message: "Doctor not found", success: false });
     }
 
-    // Create a new medical record without explicitly setting record_id
+    
     const newRecord = new MedicalRecord({
+      record_id: uuidv4(),
       patient_id: patient.unique_id,
       doctor_id: doctor.unique_id,
       record_type,
       description,
     });
 
+    
+    console.log("Creating new medical record:", newRecord);
+
+    
     await newRecord.save();
 
+    
     return res.status(201).json({
       message: "Medical record created successfully",
       success: true,
       record: {
-        record_id: newRecord._id, // Use the automatically generated _id as record_id
+        record_id: newRecord.record_id, 
         patient_id: newRecord.patient_id,
         doctor_id: newRecord.doctor_id,
         record_type: newRecord.record_type,
@@ -95,6 +109,10 @@ exports.createMedicalRecord = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating medical record:", error);
-    return res.status(500).json({ message: "Failed to create medical record", success: false, error: error.message });
+    return res.status(500).json({
+      message: "Failed to create medical record",
+      success: false,
+      error: error.message,
+    });
   }
 };
