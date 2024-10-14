@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 
-const authMiddleware = (requiredUserType) => (req, res, next) => {
+const authMiddleware = (requiredUserTypes) => (req, res, next) => {
   const token = req.headers['authorization']?.split(' ')[1]; 
 
   if (!token) {
@@ -12,9 +12,8 @@ const authMiddleware = (requiredUserType) => (req, res, next) => {
     if (err) {
       return res.status(403).json({ message: 'Invalid token', success: false });
     }
-    console.log("Decoded User Type:", decoded.user_type); 
    
-    if (requiredUserType && decoded.user_type !== requiredUserType) {
+    if (requiredUserTypes && !requiredUserTypes.includes(decoded.user_type)) {
       return res.status(403).json({ message: 'Access denied: insufficient permissions', success: false });
     }
 

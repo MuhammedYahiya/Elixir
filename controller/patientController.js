@@ -97,6 +97,45 @@ exports.viewPatientProfile = async (req, res) => {
   }
 };
 
+exports.viewAllPatients = async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1];
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const requesterType = decodedToken.user_type;
+
+    if (requesterType !== "Doctor" && requesterType !== "Lab") {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized access", success: false });
+    }
+
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 10; 
+    const skip = (page - 1) * limit; 
+
+    const patients = await Patient.find()
+      .skip(skip)
+      .limit(limit)
+      .select("unique_id fullName is_profile_public");
+
+    const totalPatients = await Patient.countDocuments();
+
+    return res.status(200).json({
+      patients,
+      currentPage: page,
+      totalPages: Math.ceil(totalPatients / limit),
+      totalPatients,
+      success: true,
+    });
+  } catch (error) {
+    console.error("Error viewing all patients:", error);
+    return res.status(500).json({ message: "Server error", success: false });
+  }
+};
+
+
+
 exports.toggleProfileVisibility = async (req, res) => {
   const { is_profile_public } = req.body;
   const token = req.headers.authorization.split(" ")[1];
