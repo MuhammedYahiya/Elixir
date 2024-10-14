@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/users");
 const Patient = require("../models/patient");
 const MedicalRecord = require("../models/medicalRecord");
+const LabRecord = require("../models/labRecord");
+const Lab = require("../models/lab");
 
 exports.patientSignup = async (req, res) => {
   const {
@@ -110,9 +112,9 @@ exports.viewAllPatients = async (req, res) => {
         .json({ message: "Unauthorized access", success: false });
     }
 
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 10; 
-    const skip = (page - 1) * limit; 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
     const patients = await Patient.find()
       .skip(skip)
@@ -133,8 +135,6 @@ exports.viewAllPatients = async (req, res) => {
     return res.status(500).json({ message: "Server error", success: false });
   }
 };
-
-
 
 exports.toggleProfileVisibility = async (req, res) => {
   const { is_profile_public } = req.body;
@@ -171,24 +171,31 @@ exports.toggleProfileVisibility = async (req, res) => {
 
 exports.fetchMedicalRecords = async (req, res) => {
   const { patient_id } = req.params;
-  const token = req.headers.authorization.split(" ")[1]; 
+  const token = req.headers.authorization.split(" ")[1];
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const requesterId = decodedToken.id;
 
     if (requesterId !== patient_id) {
-      return res.status(403).json({ message: "Access denied: unauthorized access", success: false });
+      return res
+        .status(403)
+        .json({
+          message: "Access denied: unauthorized access",
+          success: false,
+        });
     }
 
     const patient = await Patient.findOne({ unique_id: patient_id });
     if (!patient) {
-      return res.status(404).json({ message: "Patient not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "Patient not found", success: false });
     }
 
-    const records = await MedicalRecord.find({ patient_id: patient.unique_id }); 
+    const records = await MedicalRecord.find({ patient_id: patient.unique_id });
 
-    const formattedRecords = records.map(record => ({
-      record_id: record._id, 
+    const formattedRecords = records.map((record) => ({
+      record_id: record._id,
       record_type: record.record_type,
       description: record.description,
       date: record.date,
@@ -197,36 +204,53 @@ exports.fetchMedicalRecords = async (req, res) => {
     return res.status(200).json({ success: true, records: formattedRecords });
   } catch (error) {
     console.error("Error fetching medical records:", error);
-    return res.status(500).json({ message: "Failed to fetch medical records", success: false, error: error.message });
+    return res
+      .status(500)
+      .json({
+        message: "Failed to fetch medical records",
+        success: false,
+        error: error.message,
+      });
   }
 };
 
 exports.fetchMedicalRecordById = async (req, res) => {
-  const { patient_id, record_id } = req.params; 
-  const token = req.headers.authorization.split(" ")[1]; 
+  const { patient_id, record_id } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const requesterId = decodedToken.id; 
+    const requesterId = decodedToken.id;
 
     if (requesterId !== patient_id) {
-      return res.status(403).json({ message: "Access denied: unauthorized access", success: false });
+      return res
+        .status(403)
+        .json({
+          message: "Access denied: unauthorized access",
+          success: false,
+        });
     }
 
     const patient = await Patient.findOne({ unique_id: patient_id });
     if (!patient) {
-      return res.status(404).json({ message: "Patient not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "Patient not found", success: false });
     }
 
-    const record = await MedicalRecord.findOne({ _id: record_id, patient_id: patient.unique_id }); 
+    const record = await MedicalRecord.findOne({
+      _id: record_id,
+      patient_id: patient.unique_id,
+    });
 
     if (!record) {
-      return res.status(404).json({ message: "Medical record not found", success: false });
+      return res
+        .status(404)
+        .json({ message: "Medical record not found", success: false });
     }
 
- 
     const formattedRecord = {
-      record_id: record._id, 
+      record_id: record._id,
       record_type: record.record_type,
       description: record.description,
       date: record.date,
@@ -235,6 +259,57 @@ exports.fetchMedicalRecordById = async (req, res) => {
     return res.status(200).json({ success: true, record: formattedRecord });
   } catch (error) {
     console.error("Error fetching medical record:", error);
-    return res.status(500).json({ message: "Failed to fetch medical record", success: false, error: error.message });
+    return res
+      .status(500)
+      .json({
+        message: "Failed to fetch medical record",
+        success: false,
+        error: error.message,
+      });
+  }
+};
+
+exports.getPatientLabReports = async (req, res) => {
+  
+  const patient_id = req.user.id;
+
+  try {
+    const labReports = await LabRecord.find({ patient_id });
+
+    if (!labReports.length) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "No lab reports found for this patient.",
+        });
+    }
+
+    const labIds = labReports.map((report) => report.lab_id);
+    const labs = await Lab.find({ unique_id: { $in: labIds } });
+
+    const labMap = labs.reduce((acc, lab) => {
+      acc[lab.unique_id] = { name: lab.name, branch: lab.branch };
+      return acc;
+    }, {});
+
+    const formattedReports = labReports.map((report) => ({
+      lab_name: labMap[report.lab_id]?.name || "Unknown Lab",
+      lab_branch: labMap[report.lab_id]?.branch || "Unknown Branch",
+      file_url: report.file_url,
+      createdAt: report.createdAt,
+    }));
+
+    res.status(200).json({
+      success: true,
+      labReports: formattedReports,
+    });
+  } catch (error) {
+    console.error("Error fetching lab reports:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch lab reports",
+      error: error.message,
+    });
   }
 };
