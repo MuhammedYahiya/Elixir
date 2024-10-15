@@ -13,10 +13,10 @@ const app = express(); // Initialize express app
 app.use(cors());
 app.use(express.json());
 
-app.use("/api", patientRoute);
-app.use("/api", doctorRoute);
+app.use("/api/patient", patientRoute);
+app.use("/api/doctor", doctorRoute);
 app.use("/api", authRoute);
-app.use("/api",labRoute)
+app.use("/api/lab",labRoute)
 
 // Connect to MongoDB
 connectDB();

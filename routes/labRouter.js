@@ -1,13 +1,14 @@
 const express = require('express');
-const { labSignup, uploadLabReport } = require('../controller/labController'); 
+const { labSignup, uploadLabReport } = require('../controller/labController');
 const authMiddleware = require('../middleware/authMiddleware');
-const upload = require('../config/multerConfig'); 
+const upload = require('../config/multerConfig'); // Multer for handling file uploads
 
 const router = express.Router();
 
+// Lab signup
+router.post('/signup', labSignup);
 
-router.route('/lab/signup').post(labSignup);
-router.post('/lab/:lab_id/upload-lab-report', authMiddleware(['Lab']), upload.single('file_url'), uploadLabReport);
-
+// Lab uploading a report
+router.post('/:lab_id/reports', authMiddleware('Lab'), upload.single('file'), uploadLabReport);
 
 module.exports = router;
