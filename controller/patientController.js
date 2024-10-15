@@ -1,10 +1,13 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const fs = require("fs");
 const User = require("../models/users");
 const Patient = require("../models/patient");
 const MedicalRecord = require("../models/medicalRecord");
 const LabRecord = require("../models/labRecord");
 const Lab = require("../models/lab");
+const Bill = require("../models/bill");
+const cloudinary = require("../config/cloudinary");
 
 exports.patientSignup = async (req, res) => {
   const {
@@ -177,12 +180,10 @@ exports.fetchMedicalRecords = async (req, res) => {
     const requesterId = decodedToken.id;
 
     if (requesterId !== patient_id) {
-      return res
-        .status(403)
-        .json({
-          message: "Access denied: unauthorized access",
-          success: false,
-        });
+      return res.status(403).json({
+        message: "Access denied: unauthorized access",
+        success: false,
+      });
     }
 
     const patient = await Patient.findOne({ unique_id: patient_id });
@@ -204,13 +205,11 @@ exports.fetchMedicalRecords = async (req, res) => {
     return res.status(200).json({ success: true, records: formattedRecords });
   } catch (error) {
     console.error("Error fetching medical records:", error);
-    return res
-      .status(500)
-      .json({
-        message: "Failed to fetch medical records",
-        success: false,
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Failed to fetch medical records",
+      success: false,
+      error: error.message,
+    });
   }
 };
 
@@ -223,12 +222,10 @@ exports.fetchMedicalRecordById = async (req, res) => {
     const requesterId = decodedToken.id;
 
     if (requesterId !== patient_id) {
-      return res
-        .status(403)
-        .json({
-          message: "Access denied: unauthorized access",
-          success: false,
-        });
+      return res.status(403).json({
+        message: "Access denied: unauthorized access",
+        success: false,
+      });
     }
 
     const patient = await Patient.findOne({ unique_id: patient_id });
@@ -259,30 +256,25 @@ exports.fetchMedicalRecordById = async (req, res) => {
     return res.status(200).json({ success: true, record: formattedRecord });
   } catch (error) {
     console.error("Error fetching medical record:", error);
-    return res
-      .status(500)
-      .json({
-        message: "Failed to fetch medical record",
-        success: false,
-        error: error.message,
-      });
+    return res.status(500).json({
+      message: "Failed to fetch medical record",
+      success: false,
+      error: error.message,
+    });
   }
 };
 
 exports.getPatientLabReports = async (req, res) => {
-  
   const patient_id = req.user.id;
 
   try {
     const labReports = await LabRecord.find({ patient_id });
 
     if (!labReports.length) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No lab reports found for this patient.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "No lab reports found for this patient.",
+      });
     }
 
     const labIds = labReports.map((report) => report.lab_id);
@@ -309,6 +301,49 @@ exports.getPatientLabReports = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch lab reports",
+      error: error.message,
+    });
+  }
+};
+
+exports.uploadBills = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ success: false, message: "No file uploaded" });
+    }
+
+    const patient_id = req.user.id;
+
+    const patient = await Patient.findOne({ unique_id: patient_id });
+    if (!patient) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Patient not found" });
+    }
+
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "auto",
+    });
+
+    const billRecord = await Bill.create({
+      patient_id: patient.unique_id,
+      bill: result.secure_url,
+    });
+
+    fs.unlinkSync(req.file.path);
+
+    res.status(201).json({
+      success: true,
+      message: "Bill uploaded successfully",
+      billRecord,
+    });
+  } catch (error) {
+    console.error("Error uploading bill:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to upload bill",
       error: error.message,
     });
   }
