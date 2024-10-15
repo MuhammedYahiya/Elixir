@@ -348,3 +348,33 @@ exports.uploadBills = async (req, res) => {
     });
   }
 };
+
+exports.viewUploadedBills = async (req, res) => {
+  try {
+    const patientId = req.user.id; 
+
+    const bills = await Bill.find({ patient_id: patientId });
+
+    if (!bills.length) {
+      return res.status(404).json({ success: false, message: "No bills found for this patient." });
+    }
+
+    const formattedBills = bills.map(bill => ({
+      bill_id: bill._id,
+      bill_url: bill.bill,
+      createdAt: bill.createdAt,
+    }));
+
+    return res.status(200).json({
+      success: true,
+      bills: formattedBills,
+    });
+  } catch (error) {
+    console.error("Error fetching uploaded bills:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch bills",
+      error: error.message,
+    });
+  }
+};
