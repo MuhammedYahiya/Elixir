@@ -416,3 +416,36 @@ exports.uploadPrescription = async (req, res) => {
       });
   }
 };
+
+exports.getPatientPrescriptions = async (req, res) => {
+  try {
+    const { patient_id, department } = req.params;
+
+    const patient = await Patient.findOne({ unique_id: patient_id });
+    if (!patient) {
+      return res.status(404).json({ success: false, message: "Patient not found" });
+    }
+
+    const prescriptions = await Prescription.find({
+      patient_id: patient_id,
+      department: department
+    });
+
+    if (prescriptions.length === 0) {
+      return res.status(404).json({ success: false, message: `No records found for department ${department}` });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Records for department ${department}`,
+      data: prescriptions
+    });
+  } catch (error) {
+    console.error("Error fetching patient department details:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch patient department details",
+      error: error.message,
+    });
+  }
+};
