@@ -8,6 +8,7 @@ const LabRecord = require("../models/labRecord");
 const Lab = require("../models/lab");
 const Bill = require("../models/bill");
 const cloudinary = require("../config/cloudinary");
+const Prescription = require("../models/prescription");
 
 exports.patientSignup = async (req, res) => {
   const {
@@ -376,5 +377,42 @@ exports.viewUploadedBills = async (req, res) => {
       message: "Failed to fetch bills",
       error: error.message,
     });
+  }
+};
+
+exports.uploadPrescription = async (req, res) => {
+  try {
+      if (!req.file) {
+          return res.status(400).json({ success: false, message: "No file uploaded" });
+      }
+
+      const patient_id = req.user.id;
+
+      const department = req.params.department; 
+
+      const result = await cloudinary.uploader.upload(req.file.path, {
+          resource_type: "auto",
+      });
+
+      const prescriptionRecord = await Prescription.create({
+          patient_id: patient_id,
+          department: department, 
+          prescription_file: result.secure_url,
+      });
+
+      fs.unlinkSync(req.file.path);
+
+      res.status(201).json({
+          success: true,
+          message: "Prescription uploaded successfully",
+          prescriptionRecord,
+      });
+  } catch (error) {
+      console.error("Error uploading prescription:", error);
+      res.status(500).json({
+          success: false,
+          message: "Failed to upload prescription",
+          error: error.message,
+      });
   }
 };

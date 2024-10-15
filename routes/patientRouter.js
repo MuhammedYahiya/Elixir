@@ -1,5 +1,5 @@
 const express = require('express')
-const { patientSignup, viewPatientProfile, toggleProfileVisibility, fetchMedicalRecords, fetchMedicalRecordById, viewAllPatients, getPatientLabReports, uploadBills, viewUploadedBills } = require('../controller/patientController');
+const { patientSignup, viewPatientProfile, toggleProfileVisibility, fetchMedicalRecords, fetchMedicalRecordById, viewAllPatients, getPatientLabReports, uploadBills, viewUploadedBills, uploadPrescription } = require('../controller/patientController');
 const authMiddleware = require('../middleware/authMiddleware');
 const router = express.Router()
 const upload = require('../config/multerConfig');
@@ -13,5 +13,7 @@ router.route('/patients/all').get(authMiddleware(['Doctor', 'Lab']), viewAllPati
 router.get('/patient/lab/reports', authMiddleware(['Patient']), getPatientLabReports);
 router.post('/patient/bill/upload-bill', authMiddleware('Patient'), upload.single('file'), uploadBills);
 router.get('/patient/bills', authMiddleware('Patient'), viewUploadedBills);
+router.post('/patient/prescription/upload/:department', authMiddleware('Patient'), upload.single('file'), uploadPrescription);
+
 
 module.exports = router;
