@@ -6,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: url('/Elixir/Images/doctorpro.avif') no-repeat center center fixed;
+    background: url('Images/doctorpro.avif') no-repeat center center fixed;
     background-size: cover;
     padding-top: 75px;
     display: flex;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Profile</title>
-    <link rel="stylesheet" href="/Elixir/patpf.css">
+    <link rel="stylesheet" href="patpf.css">
 </head>
 <body>
 
@@ -55,10 +55,10 @@
 <!-- Right Side Folder Section -->
 <div class="folder-section">
     <div class="folder-grid">
-        <div class="folder" ><a href="/Elixir/bills.html">Bills</a></div>
+        <div class="folder" ><a href="bills.html">Bills</a></div>
         <div class="folder"><h4>Immunisation</h4></div>
         <div class="folder"><h4>Reports</h4></div>
-        <div class="folder"><a href="/Elixir/departments.html">Departments</a></div>
+        <div class="folder"><a href="departments.html">Departments</a></div>
     </div>
 </div>
 
@@ -73,7 +73,7 @@
 
         if (!token || !patientId) {
             alert("No token or patient ID found. Please log in again.");
-            window.location.href = '/Elixir/login.html'; // Redirect to login page
+            window.location.href = 'login.html'; // Redirect to login page
             return;
         }
 
@@ -110,7 +110,7 @@
         localStorage.removeItem('token');
         localStorage.removeItem('patientId');
         alert("You have logged out.");
-        window.location.href = '/Elixir/login.html'; // Redirect to login page
+        window.location.href = 'login.html'; // Redirect to login page
     });
 
     // Call fetchPatientDetails on page load

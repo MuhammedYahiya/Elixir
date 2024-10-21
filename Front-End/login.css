@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background-image: url('/Elixir/images/login.avif'); /* Replace with your image path */
+  background-image: url('Images/login.avif'); /* Replace with your image path */
   background-size: cover;
   background-position: center;
   margin: 0; /* Ensure there's no body margin */

@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f8ff; /* Light blue background */
-    background: url("/Elixir/Images/backg.jpeg");
+    background: url("Images/backg.jpeg");
     margin: 0;
     padding: 0;
 }
@@ -130,25 +130,25 @@ body {
 
 /* Unique images for each folder */
 .folder.oncology::before {
-    background-image: url('/Elixir/Images/cancer.jpg'); /* Replace with your image path */
+    background-image: url('Images/cancer.jpg'); /* Replace with your image path */
 }
 
 .folder.cardiology::before {
-    background-image: url('/Elixir/Images/heart.jpeg'); /* Replace with your image path */
+    background-image: url('Images/heart.jpeg'); /* Replace with your image path */
 }
 
 .folder.neurology::before {
-    background-image: url('/Elixir/Images/neuro.jpg'); /* Replace with your image path */
+    background-image: url('Images/neuro.jpg'); /* Replace with your image path */
 }
 
 .folder.paediatrics::before {
-    background-image: url('/Elixir/Images/paed.jpg'); /* Replace with your image path */
+    background-image: url('Images/paed.jpg'); /* Replace with your image path */
 }
 
 .folder.general-medicine::before {
-    background-image: url('/Elixir/Images/gm.jpeg'); /* Replace with your image path */
+    background-image: url('Images/gm.jpeg'); /* Replace with your image path */
 }
 
 .folder.radiology::before {
-    background-image: url('/Elixir/Images/rad.jpeg'); /* Replace with your image path */
+    background-image: url('Images/rad.jpeg'); /* Replace with your image path */
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Elixir Login</title>
-    <link rel="stylesheet" href="/Elixir/login.css" />
+    <link rel="stylesheet" href="login.css" />
 </head>
 <body>
     <div class="main">
@@ -90,9 +90,9 @@
 
                         // Check the user type
                         if (data.user_type === "Doctor") {
-                            window.location.href = "/Elixir/doctorprofile.html"; // Redirect to doctor profile
+                            window.location.href = "doctorprofile.html"; // Redirect to doctor profile
                         } else if (data.user_type === "Patient") {
-                            window.location.href = "/Elixir/patientpf.html"; // Redirect to patient profile
+                            window.location.href = "patientpf.html"; // Redirect to patient profile
                         } else {
                             alert("Unknown user type");
                         }

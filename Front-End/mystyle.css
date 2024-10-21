@@ -76,7 +76,7 @@ body, html {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: url('/Elixir/images/eli.png') no-repeat center center/cover;
+    background: url('Images/eli.png') no-repeat center center/cover;
     background-size: cover; /* Ensure the background image covers the full area */
     background-attachment: fixed; /* Keep background fixed when scrolling */
     overflow-x: hidden;
