@@ -52,6 +52,73 @@ exports.labSignup = async (req, res) => {
   }
 };
 
+exports.updateLabDetails = async (req, res) => {
+  const { lab_id } = req.params; // `lab_id` corresponds to `unique_id` in the Lab model.
+  const { name, email, branch } = req.body;
+
+  try {
+    // Find the lab by unique_id and update the details
+    const updatedLab = await Lab.findOneAndUpdate(
+      { unique_id: lab_id }, // Using `unique_id` field for lookup
+      { name, email, branch },
+      { new: true, runValidators: true } // `new: true` returns the updated document, `runValidators: true` ensures validation
+    );
+
+    // If lab not found
+    if (!updatedLab) {
+      return res.status(404).json({
+        message: "Lab not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Lab details updated successfully",
+      success: true,
+      data: updatedLab,
+    });
+  } catch (error) {
+    console.error("Update error:", error);
+    return res.status(500).json({
+      message: "Failed to update lab details",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+exports.viewLabDetails = async (req, res) => {
+  const { lab_id } = req.params; // `lab_id` corresponds to `unique_id` in the Lab model.
+
+  try {
+    // Find the lab by unique_id
+    const lab = await Lab.findOne({ unique_id: lab_id });
+
+    // If lab not found
+    if (!lab) {
+      return res.status(404).json({
+        message: "Lab not found",
+        success: false,
+      });
+    }
+
+    return res.status(200).json({
+      message: "Lab details retrieved successfully",
+      success: true,
+      data: lab,
+    });
+  } catch (error) {
+    console.error("View error:", error);
+    return res.status(500).json({
+      message: "Failed to retrieve lab details",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
+
 exports.uploadLabReport = async (req, res) => {
   try {
     if (!req.file) {
