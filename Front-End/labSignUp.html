@@ -1,45 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Lab Signup - Elixir</title>
-    <link rel="stylesheet" href="mystyle.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab Signup</title>
+    <link rel="stylesheet" href="mystyle.css" />
 </head>
 <body>
-    <div class="main">
-
-        <!-- Navigation Bar -->
-        <div class="navbar">
-           <div class="icon">
-              <h2 class="logo">Elixir</h2>
-           </div>
-           <div class="menu">
-              <ul>
-                 <li><a href="#">HOME</a></li>
-                 <li><a href="#">ABOUT</a></li>
-                 <li><a href="#">SERVICE</a></li>
-                 <li><a href="#">CONTACT</a></li>
-              </ul>
-           </div>
-        </div>
-
-    </div>
-
     <div class="signup-container">
-        <div class="form-container">
-            <h1>Sign up for Lab</h1>
-            <form>
-                <input type="text" placeholder="Full name" required>
-                <input type="number" placeholder="Age" required>
-                <input type="text" placeholder="Gender" required>
-                <input type="text" placeholder="Registration ID" required>
-                <input type="password" placeholder="Password" required>
-                <button type="submit">Sign up</button>
-                <p>or <a href="#">login</a></p>
-            </form>
-        </div>
+        <h2>Lab Signup</h2>
+        <form id="lab-signup-form">
+            <label for="unique_id">Registration ID:</label>
+            <input type="text" id="unique_id" name="unique_id" required />
+
+            <label for="name">Lab Name:</label>
+            <input type="text" id="name" name="name" required />
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required />
+
+            <label for="branch">Branch:</label>
+            <input type="text" id="branch" name="branch" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
+
+            <button type="submit">Signup</button>
+        </form>
     </div>
+
+    <script>
+        document
+            .getElementById("lab-signup-form")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                const unique_id = document.getElementById("unique_id").value;
+                const name = document.getElementById("name").value;
+                const email = document.getElementById("email").value;
+                const branch = document.getElementById("branch").value;
+                const password = document.getElementById("password").value;
+
+                try {
+                    const response = await fetch("http://localhost:5000/api/lab/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ unique_id, name, email, branch, password }),
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert(data.message);
+                        window.location.href = "labprofile.html"; // Redirect to lab profile or login page
+                    } else {
+                        alert(data.message || "Signup failed");
+                    }
+                } catch (error) {
+                    console.error("Error during lab signup:", error);
+                    alert("An error occurred. Please try again.");
+                }
+            });
+    </script>
 </body>
 </html>
