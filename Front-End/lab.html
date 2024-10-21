@@ -3,188 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab Report Upload</title>
+    <title>Patient Report Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
     <style>
         body {
             background-color: #f8f9fa;
+            background-image: url("deptbg.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat !important;
+            height: 100vh;
+            margin: 0;
         }
-        h2, h3 {
-            color: #004D40; /* Dark green for headings */
-        }
-        .form-label {
-            color: #004D40; /* Dark green for labels */
-        }
+
         .container {
             margin-top: 50px;
+        }
+        h2, h3 {
+            color: #004D40;
+        }
+        .form-label {
+            color: #004D40;
+        }
+        .navbar {
+            margin-bottom: 30px;
+        }
+        .department-name {
+            text-align: center;
+            margin: 30px 0;
+            color: #004D40;
+            font-size: 24px;
+        }
+        .report-card {
+            border: 1px solid #004D40;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <h2>Upload Patient Report</h2>
-    <form id="reportUploadForm">
-        <div class="mb-3">
-            <label for="patientId" class="form-label">Patient ID</label>
-            <input type="text" class="form-control" id="patientId" required >
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" alt="Elixir Logo" width="30" height="30" class="d-inline-block align-top">
+                Elixir
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="goToHome()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
         </div>
-        <div class="mb-3">
-            <label for="reportFile" class="form-label">Select Report File</label>
-            <input type="file" class="form-control" id="reportFile" accept="application/pdf,image/*" required>
+    </nav>
+
+    <div class="department-name">
+       <b>Patient Reports</b> 
+    </div>
+
+    <div class="container mt-5">
+        <h2>Your Reports</h2>
+        <div id="reportContainer"></div>
+    </div>
+
+    <!-- Modal for viewing reports -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">Report View</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Content will be injected here -->
+                </div>
+            </div>
         </div>
-        <h4>Enter Vitals</h4>
-        <div class="mb-3">
-            <label for="bloodPressure" class="form-label">Blood Pressure (e.g. 120/80)</label>
-            <input type="text" class="form-control" id="bloodPressure" required>
-        </div>
-        <div class="mb-3">
-            <label for="cholesterol" class="form-label">Cholesterol Level</label>
-            <input type="text" class="form-control" id="cholesterol" placeholder="e.g. 180 mg/dL" required>
-        </div>
-        <div class="mb-3">
-            <label for="sugarBefore" class="form-label">Sugar Level Before Fasting</label>
-            <input type="text" class="form-control" id="sugarBefore" placeholder="e.g. 90 mg/dL" required>
-        </div>
-        <div class="mb-3">
-            <label for="sugarAfter" class="form-label">Sugar Level After Fasting</label>
-            <input type="text" class="form-control" id="sugarAfter" placeholder="e.g. 110 mg/dL" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-    </form>
-    <div id="uploadMessage" class="mt-3"></div>
+    </div>
 
-    <!-- Canvas for the line graph -->
-    <h3 class="mt-4">Vitals Spike Graph</h3>
-    <canvas id="vitalsChart" width="400" height="200"></canvas>
-</div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const patientId = localStorage.getItem('unique_id');
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Retrieve patientId and labId from localStorage
-        const patientId = localStorage.getItem("patient_id");
-        const labId = localStorage.getItem("unique_id");
-
-        // Automatically set the patientId in the input field (making it read-only)
-        const patientIdInput = document.getElementById('patientId');
-        if (patientId && patientIdInput) {
-            patientIdInput.value = patientId;
-            patientIdInput.readOnly = true; // Make the input read-only so it cannot be edited
-        }
-    });
-
-    document.getElementById('reportUploadForm').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent form submission
-
-    const patientId = document.getElementById('patientId').value;
-    const labId = localStorage.getItem("unique_id");
-    const fileInput = document.getElementById('reportFile');
-    const file = fileInput.files[0];
-    const bloodPressure = document.getElementById('bloodPressure').value;
-    const cholesterol = document.getElementById('cholesterol').value;
-    const sugarBefore = document.getElementById('sugarBefore').value;
-    const sugarAfter = document.getElementById('sugarAfter').value;
-
-    if (file && labId) {
-        const formData = new FormData();
-        formData.append('blood_pressure', bloodPressure);
-        formData.append('cholesterol_level', cholesterol);
-        formData.append('sugar_level_before_fasting', sugarBefore);
-        formData.append('sugar_level_after_fasting', sugarAfter);
-        formData.append('file', file); // Ensure this matches 'upload.single("file")'
-
-        // Construct the correct URL
-        const apiUrl = `http://localhost:5000/api/lab/${labId}/report/${patientId}`;
-
-        try {
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Ensure token is included
-                }
-            });
-
-            const responseText = await response.text(); // Get the raw response text
-
-            if (response.ok) {
-                document.getElementById('uploadMessage').innerHTML = '<p class="text-success">Report uploaded successfully!</p>';
-                drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter);
+            if (patientId && token) {
+                fetchReports(patientId, token);
             } else {
-                console.error('Response error:', responseText); // Log the response text for debugging
-                try {
-                    const errorData = JSON.parse(responseText); // Try parsing the response as JSON
-                    document.getElementById('uploadMessage').innerHTML = `<p class="text-danger">${errorData.message || 'Failed to upload report. Please try again.'}</p>`;
-                } catch (jsonError) {
-                    document.getElementById('uploadMessage').innerHTML = `<p class="text-danger">Error: ${responseText}</p>`; // Fallback to displaying the raw response
-                }
-            }
-        } catch (error) {
-            console.error('Error uploading report:', error);
-            document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">An error occurred while uploading the report.</p>';
-        }
-    }
-
-    // Reset the form
-    document.getElementById('reportUploadForm').reset();
-});
-
-
-    // Function to draw the chart remains unchanged
-    function drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter) {
-        const ctx = document.getElementById('vitalsChart').getContext('2d');
-        const labels = ['Blood Pressure', 'Cholesterol', 'Sugar Before Fasting', 'Sugar After Fasting'];
-        const data = [
-            parseVital(bloodPressure),
-            parseVital(cholesterol),
-            parseVital(sugarBefore),
-            parseVital(sugarAfter)
-        ];
-
-        const vitalsChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Vital Measurements',
-                    data: data,
-                    borderColor: '#004D40',
-                    backgroundColor: 'rgba(0, 77, 64, 0.2)',
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Value'
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Vital Type'
-                        }
-                    }
-                }
+                document.getElementById('reportContainer').innerHTML = '<p>Invalid Patient ID or token not found.</p>';
             }
         });
-    }
 
-    function parseVital(vital) {
-        if (vital.includes('/')) {
-            return parseInt(vital.split('/')[0]); // Return systolic value
-        } else {
-            return parseInt(vital);
+        async function fetchReports(patientId, token) {
+            try {
+                const response = await fetch(`http://localhost:5000/api/patient/${patientId}/reports`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    displayReports(data.labReports);
+                } else {
+                    document.getElementById('reportContainer').innerHTML = `<p>${data.message || 'No reports found.'}</p>`;
+                }
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+                document.getElementById('reportContainer').innerHTML = '<p>Error fetching reports. Please try again later.</p>';
+            }
         }
-    }
-</script>
 
+        function displayReports(reports) {
+            const reportContainer = document.getElementById('reportContainer');
+            reportContainer.innerHTML = '';
 
+            if (reports.length === 0) {
+                reportContainer.innerHTML = '<p>No reports found.</p>';
+                return;
+            }
 
+            reports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                reportCard.innerHTML = `
+                    <h3>${report.lab_name}</h3>
+                    <p><strong>Branch:</strong> ${report.lab_branch}</p>
+                    <p><strong>Date:</strong> ${new Date(report.createdAt).toLocaleString()}</p>
+                    <button class="btn btn-primary" onclick="viewReport('${report.file_url}')">View</button>
+                    <a class="btn btn-secondary" href="${report.file_url}" download>Download</a>
+                `;
+                reportContainer.appendChild(reportCard);
+            });
+        }
+
+        function viewReport(fileUrl) {
+            const modalContent = document.getElementById('modalContent');
+            const isImage = /\.(jpg|jpeg|png|gif)$/i.test(fileUrl);
+            const isPDF = /\.pdf$/i.test(fileUrl);
+
+            if (isImage) {
+                modalContent.innerHTML = `<img src="${fileUrl}" alt="Report Image" class="img-fluid" />`;
+            } else if (isPDF) {
+                modalContent.innerHTML = `<embed src="${fileUrl}" type="application/pdf" width="100%" height="500px" />`;
+            } else {
+                modalContent.innerHTML = `<p>Unsupported file type.</p>`;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+            modal.show();
+        }
+
+        function goToHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
 </body>
 </html>

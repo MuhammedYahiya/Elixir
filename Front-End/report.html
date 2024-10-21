@@ -7,45 +7,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-color: #f8f9fa; /* Light background color */
-            background-image: url("/Elixir/deptbg.jpeg"); /* Background image */
-            background-size: cover; /* Ensures the image covers the entire page */
-            background-position: center; /* Centers the image */
-            background-repeat: no-repeat !important; /* Prevents the image from repeating */
-            height: 100vh; /* Sets the height to 100% of the viewport height */
-            margin: 0; /* Removes default margin */
+            background-color: #f8f9fa;
+            background-image: url("deptbg.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat !important;
+            height: 100vh;
+            margin: 0;
         }
         
         .container {
             margin-top: 50px;
         }
         h2, h3 {
-            color: #004D40; /* Dark green for headings */
-        }
-        .form-label {
-            color: #004D40; /* Dark green for labels */
-        }
-        .navbar {
-            margin-bottom: 30px; /* Space below navbar */
-        }
-        .department-name {
-            text-align: center; /* Center the text */
-            margin: 30px 0; /* Space around the department name */
-            color: #004D40; /* Dark green color */
-            font-size: 24px; /* Font size for the department name */
+            color: #004D40;
         }
         .report-card {
-            border: 1px solid #004D40; /* Dark green border */
-            border-radius: 8px; /* Rounded corners */
-            padding: 15px; /* Padding around the card */
-            margin-bottom: 20px; /* Space between cards */
-            background-color: #ffffff; /* White background for report card */
+            border: 1px solid #004D40;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #ffffff;
+        }
+        .modal-content {
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
@@ -60,78 +50,107 @@
                     <li class="nav-item">
                         <a class="nav-link active" href="#" onclick="goToHome()">Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#about">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#services">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#contact">Contact</a>
-                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <div class="department-name">
-       <b>Patient Reports</b> 
-    </div>
 
     <div class="container mt-5">
         <h2>Your Reports</h2>
         <div id="reportContainer"></div>
     </div>
 
+    <!-- Modal for Viewing Reports -->
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reportModalLabel">View Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalContent">
+                    <!-- Content will be dynamically added here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function goToHome() {
-            window.location.href = 'index.html'; // Change 'index.html' to your home page file name
+            window.location.href = 'index.html';
         }
 
-        // Function to fetch reports from the backend
-        async function fetchReports(patientId) {
+        async function fetchReports(patientId, token) {
             try {
-                const response = await fetch(`/api/lab/reports/${patientId}`);
-                const reports = await response.json();
-                displayReports(reports);
+                const response = await fetch(`http://localhost:5000/api/patient/${patientId}/reports`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayReports(data.labReports);
+                } else {
+                    document.getElementById('reportContainer').innerHTML = '<p>No reports found.</p>';
+                }
             } catch (error) {
                 console.error('Error fetching reports:', error);
+                document.getElementById('reportContainer').innerHTML = '<p>Error fetching reports. Please try again later.</p>';
             }
         }
 
-        // Function to display reports on the page
         function displayReports(reports) {
             const reportContainer = document.getElementById('reportContainer');
-            reportContainer.innerHTML = ''; // Clear existing reports
+            reportContainer.innerHTML = '';
 
-            if (reports.length === 0) {
+            if (!reports.length) {
                 reportContainer.innerHTML = '<p>No reports found.</p>';
                 return;
             }
 
-            reports.forEach(report => {
+            reports.forEach((report, index) => {
                 const reportCard = document.createElement('div');
                 reportCard.className = 'report-card';
                 reportCard.innerHTML = `
-                    <h3>Report ID: ${report._id}</h3>
-                    <p><strong>Details:</strong> ${report.details}</p>
-                    <p><strong>Vitals:</strong> ${report.vitals}</p>
+                    <h3>${report.lab_name}</h3>
+                    <p><strong>Branch:</strong> ${report.lab_branch}</p>
                     <p><strong>Submitted At:</strong> ${new Date(report.createdAt).toLocaleString()}</p>
+                    <button class="btn btn-primary" onclick="viewReport('${report.file_url}')">View</button>
+                    <a href="${report.file_url}" class="btn btn-secondary" download>Download</a>
                 `;
                 reportContainer.appendChild(reportCard);
             });
         }
 
-        // Get the patient ID from the URL (assuming it's passed as a query parameter)
-        const urlParams = new URLSearchParams(window.location.search);
-        const patientId = urlParams.get('patientId');
-        if (patientId) {
-            fetchReports(patientId);
-        } else {
-            document.getElementById('reportContainer').innerHTML = '<p>Invalid Patient ID.</p>';
-        }
-    </script>
+        function viewReport(fileUrl) {
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = '';
 
+            if (fileUrl.endsWith('.pdf')) {
+                modalContent.innerHTML = `<iframe src="${fileUrl}" width="100%" height="500px"></iframe>`;
+            } else {
+                modalContent.innerHTML = `<img src="${fileUrl}" alt="Report Image" class="img-fluid">`;
+            }
+
+            const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
+            reportModal.show();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            const patientId = localStorage.getItem('unique_id');
+
+            if (patientId && token) {
+                fetchReports(patientId, token);
+            } else {
+                document.getElementById('reportContainer').innerHTML = '<p>Invalid Patient ID or token not found. Please log in again.</p>';
+            }
+        });
+    </script>
 </body>
 </html>

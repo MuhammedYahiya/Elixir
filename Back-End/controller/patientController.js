@@ -266,7 +266,7 @@ exports.fetchMedicalRecordById = async (req, res) => {
 };
 
 exports.getPatientLabReports = async (req, res) => {
-  const patient_id = req.user.id;
+  const patient_id = req.params.patient_id;
 
   try {
     const labReports = await LabRecord.find({ patient_id });

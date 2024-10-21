@@ -34,7 +34,7 @@ router.post('/bills/upload', authMiddleware('Patient'), upload.single('file'), u
 router.get('/bills', authMiddleware('Patient'), viewUploadedBills);
 
 // Labs
-router.get('/lab/reports', authMiddleware('Patient'), getPatientLabReports);
+router.get('/:patient_id/reports', authMiddleware('Patient'), getPatientLabReports);
 
 // Admin route
 router.get('/patients/all', authMiddleware(['Doctor', 'Lab']), viewAllPatients);
