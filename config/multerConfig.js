@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const allowedTypes = /pdf/;
+  const allowedTypes = /pdf|jpg|jpeg|png/;
   const extName = allowedTypes.test(
     path.extname(file.originalname).toLowerCase()
   );
@@ -20,7 +20,7 @@ const fileFilter = (req, file, cb) => {
   if (extName) {
     return cb(null, true);
   } else {
-    return cb(new Error("Only .pdf files are allowed!"));
+    return cb(new Error("Only .pdf, .jpg, .jpeg  and .png files are allowed!")); // Reject the file
   }
 };
 

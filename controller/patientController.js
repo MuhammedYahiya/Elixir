@@ -328,9 +328,13 @@ exports.uploadBills = async (req, res) => {
       resource_type: "auto",
     });
 
+    // Use the description from the form data
+    const {description}= req.body;
+
     const billRecord = await Bill.create({
       patient_id: patient.unique_id,
       bill: result.secure_url,
+      description, // Make sure your Bill schema includes a description field
     });
 
     fs.unlinkSync(req.file.path);
@@ -349,6 +353,7 @@ exports.uploadBills = async (req, res) => {
     });
   }
 };
+
 
 exports.viewUploadedBills = async (req, res) => {
   try {
