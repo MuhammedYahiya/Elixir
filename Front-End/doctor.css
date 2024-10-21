@@ -6,7 +6,7 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: url('Images/doctorpro.avif') no-repeat center center fixed;
+    background: url('doctorpro.avif') no-repeat center center fixed;
     background-size: cover;
     padding-top: 75px;
     display: flex;
@@ -56,89 +56,69 @@ body {
 }
 
 .container {
-    width: 80%;
+    width: 90%;
     max-width: 900px;
     padding: 20px;
     background-color: rgba(44, 75, 91, 0.8);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .doctor-profile {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
     margin-bottom: 40px;
 }
 
+.doctor-photo {
+    margin-bottom: 10px;
+    text-align: center;
+}
+
 .doctor-photo img {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
     background-color: #ccc;
-}
-
-.doctor-details {
-    margin-left: 20px;
-}
-
-.doctor-details h2 {
     margin-bottom: 10px;
-    color: white;
 }
 
-.doctor-details form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-top: 20px;
-}
-
-.doctor-details label {
-    color: white;
-    margin-bottom: 5px;
-}
-
-.doctor-details input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.doctor-details button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
+.upload-button {
     cursor: pointer;
+    color: #007bff;
+    text-decoration: underline;
 }
 
-.doctor-details button:hover {
-    background-color: #0056b3;
+.upload-button:hover {
+    color: #0056b3;
 }
 
-.patient-access h3 {
-    margin-bottom: 15px;
+.doctor-details-card {
+    background-color: rgba(51, 51, 51, 0.8);
     color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    text-align: left;
+    margin-top: 20px;
+    position: relative;
 }
 
-.patient-access form {
-    display: inline-block;
+.details-heading {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.patient-access label {
-    font-size: 16px;
-    color: white;
-}
-
-.patient-access input {
-    width: 200px;
+input[type="text"] {
+    width: 100%;
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 15px;
@@ -146,16 +126,31 @@ body {
     border-radius: 5px;
 }
 
-.patient-access button {
-    padding: 10px 20px;
+button {
     background-color: #007bff;
     color: white;
     border: none;
+    padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.patient-access button:hover {
-    background-color: #0056b3; 
+button:hover {
+    background-color: #0056b3;
 }
 
+/* Responsive Design */
+@media (max-width: 600px) {
+    .container {
+        width: 95%;
+    }
+
+    .navbar .menu ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .navbar .menu ul li a {
+        font-size: 14px;
+    }
+}

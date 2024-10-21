@@ -1,68 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Doctor Profile - Elixer</title>
-    <link rel="stylesheet" href="doctor.css">
-    <script defer src="doc.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Doctor Profile</title>
+  <link rel="stylesheet" href="doctor.css">
 </head>
 <body>
-    <div class="navbar">
-        <div class="icon">
-            <h2 class="logo">Elixir</h2>
-        </div>
-        <div class="menu">
-            <ul>
-                <li><a href="#">HOME</a></li>
-                <li><a href="#">ABOUT</a></li>
-                <li><a href="#">SERVICE</a></li>
-                <li><a href="#">CONTACT</a></li>
-            </ul>
-        </div>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+  <div class="icon">
+    <h2 class="logo">Elixir</h2>
+  </div>
+  <div class="menu">
+    <ul>
+      <li><a href="#">HOME</a></li>
+      <li><a href="#">ABOUT</a></li>
+      <li><a href="#">SERVICE</a></li>
+      <li><a href="#">CONTACT</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Doctor Profile Section -->
+<div class="container">
+  <h1 class="doctor-title">Doctor Profile</h1>
+  
+  <!-- Profile Card -->
+  <div class="doctor-profile">
+    <div class="doctor-photo">
+      <img id="doctor-photo-preview" src="225-default-avatar-256.png" alt="Doctor Photo">
+      <label for="doctor-photo" class="upload-button">Change Photo</label>
+      <input type="file" id="doctor-photo" accept="image/*" style="display: none;">
     </div>
-    
-    <div class="container">
-        <div class="doctor-profile">
-            <div class="doctor-photo">
-                <img src="doctor-photo-placeholder.png" alt="Doctor Photo">
-            </div>
-            <div class="doctor-details">
-                <h2>DOCTOR PROFILE</h2>
-                <form action="#" id="doctor-form">
-                    <label for="doctor-name">Name:</label>
-                    <input type="text" id="doctor-name" name="doctor-name" placeholder="Enter Doctor's Name" pattern="[A-Za-z\s]+" title="Name should contain only alphabets" required>
-                    
-                    <label for="doctor-age">Age:</label>
-                    <input type="number" id="doctor-age" name="doctor-age" placeholder="Enter Doctor's Age" min="1" max="100" required>
+    <h2 class="doctor-name" id="doctor-name-display">Dr. John Doe</h2>
+  </div>
 
-                    <label for="gender">Gender:</label>
-                    <select id="gender" name="gender" required>
-                        <option value="" disabled selected>Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
+  <!-- Doctor Details (Read-Only View) -->
+  <div id="doctor-details-readonly" class="doctor-details-card">
+    <h3 class="details-heading">Doctor Details</h3>
+    <p><strong>Name:</strong> <span id="doctor-name-readonly">John Doe</span></p>
+    <p><strong>Registration No:</strong> <span id="doctor-reg-no-readonly">123456</span></p>
+    <p><strong>Current Hospital:</strong> <span id="hospital-readonly">City Hospital</span></p>
+    <p><strong>Specialization:</strong> <span id="specialization-readonly">ENT</span></p>
+    <button id="edit-button" onclick="toggleEditMode()">Edit</button>
+  </div>
 
-                    <label for="doctor-password">Password:</label>
-                    <input type="password" id="doctor-password" name="doctor-password" placeholder="Enter Password" required>
-                    
-                    <label for="doctor-reg-no">Registration No:</label>
-                    <input type="text" id="doctor-reg-no" name="doctor-reg-no" placeholder="Enter Registration No" required>
-                    
-                    <button type="submit">Save Details</button>
-                </form>
-            </div>
-        </div>
+  <!-- Doctor Details Form (Edit Mode) -->
+  <div id="doctor-details-edit" class="doctor-details-card" style="display:none;">
+    <h3 class="details-heading">Edit Doctor Details</h3>
+    <form id="doctor-form">
+      <p><strong>Name:</strong> <input type="text" id="doctor-name" value="John Doe"></p>
+      <p><strong>Registration No:</strong> <input type="text" id="doctor-reg-no" value="123456"></p>
+      <p><strong>Current Hospital:</strong> <input type="text" id="current-hospital" value="City Hospital"></p>
+      <p><strong>Specialization:</strong> <input type="text" id="specialization" value="ENT"></p>
+      <button type="button" onclick="saveDetails()">Save</button>
+    </form>
+  </div>
+  <!-- Patient ID Section -->
+<div class="patient-id-section">
+    <h3 class="details-heading">View Patient Profile</h3>
+    <form id="patient-id-form">
+      <p><strong>Patient ID:</strong> <input type="text" id="patient-id" placeholder="Enter Patient ID"></p>
+      <button type="button" onclick="viewPatientProfile()">View Profile</button>
+    </form>
+  </div>
+</div>
 
-        <div class="patient-access">
-            <h3>To access patient reports:</h3>
-            <form action="#">
-                <label for="patient-id">Enter patient ID:</label>
-                <input type="text" id="patient-id" name="patient-id" required>
-                <button type="submit">Submit</button>
-            </form>
-        </div>
-    </div>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const doctorPhotoInput = document.getElementById("doctor-photo");
+        const doctorPhotoPreview = document.getElementById("doctor-photo-preview");
+        const editButton = document.getElementById("edit-button");
+        const doctorForm = document.getElementById("doctor-form");
+        const saveButton = doctorForm.querySelector("button");
+        const doctorDetailsReadonly = document.getElementById("doctor-details-readonly");
+        const doctorDetailsEdit = document.getElementById("doctor-details-edit");
+      
+        // Handle photo upload
+        doctorPhotoInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              doctorPhotoPreview.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      
+        // Toggle between edit and readonly mode
+        window.toggleEditMode = () => {
+          doctorDetailsReadonly.style.display = "none";
+          doctorDetailsEdit.style.display = "block";
+        };
+      
+        // Save details and switch back to readonly mode
+        window.saveDetails = () => {
+          const name = document.getElementById("doctor-name").value;
+          const regNo = document.getElementById("doctor-reg-no").value;
+          const hospital = document.getElementById("current-hospital").value;
+          const specialization = document.getElementById("specialization").value;
+      
+          // Update the displayed name in both the details section and the top display
+          document.getElementById("doctor-name-readonly").textContent = name;
+          document.getElementById("doctor-name-display").textContent = "Dr. " + name;
+      
+          // Update other fields
+          document.getElementById("doctor-reg-no-readonly").textContent = regNo;
+          document.getElementById("hospital-readonly").textContent = hospital;
+          document.getElementById("specialization-readonly").textContent = specialization;
+      
+          doctorDetailsReadonly.style.display = "block";
+          doctorDetailsEdit.style.display = "none";
+        };
+      });
+    // Function to handle viewing the patient profile
+  window.viewPatientProfile = () => {
+    const patientId = document.getElementById("patient-id").value;
+    if (patientId) {
+      // Redirect to patient profile page with the provided ID
+      window.location.href = `patient-profile.html?patientId=${patientId}`;
+    } else {
+      alert("Please enter a valid Patient ID.");
+    }
+  };
+</script>
 </body>
 </html>
+
