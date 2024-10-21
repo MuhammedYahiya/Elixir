@@ -39,9 +39,9 @@
       <div class="update-report">
         <h3>To update patient reports:</h3>
         <label>Enter patient ID:</label>
-        <input type="text" id="patientId">
-        <button>Submit</button>
-      </div>
+        <input type="text" id="patientIdInput">
+        <button onclick="goToLabPage()">Submit</button>
+    </div>
     </section>
   </main>
 
@@ -156,6 +156,11 @@
         }
       });
     });
+    function goToLabPage() {
+        const patientId = document.getElementById('patientIdInput').value;
+        localStorage.setItem("patient_id", patientId);
+        window.location.href = "lab.html";
+    }
   </script>
 </body>
 </html>

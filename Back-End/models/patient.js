@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validator")
+const validator = require("validator");
 
 const patientSchema = new mongoose.Schema({
   unique_id: {
@@ -16,7 +16,7 @@ const patientSchema = new mongoose.Schema({
     required: true,
   },
   dob: {
-    type: Date,
+    type: String,
     required: true,
   },
   gender: {
@@ -37,7 +37,7 @@ const patientSchema = new mongoose.Schema({
   },
   is_profile_public: {
     type: Boolean,
-    default: false, 
+    default: false,
   },
   privacy_settings: {
     can_view: [
@@ -47,6 +47,18 @@ const patientSchema = new mongoose.Schema({
         access_level: { type: String, enum: ["View", "Edit", "Restricted"] },
       },
     ],
+  },
+  blood_pressure: {
+    type: String,
+  },
+  cholesterol_level: {
+    type: String, // Store in mg/dL
+  },
+  sugar_level_before_fasting: {
+    type: String, // Store in mg/dL
+  },
+  sugar_level_after_fasting: {
+    type: String, // Store in mg/dL
   },
   created_at: {
     type: Date,

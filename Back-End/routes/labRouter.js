@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/signup', labSignup);
 
 // Lab uploading a report
-router.post('/:lab_id/reports', authMiddleware('Lab'), upload.single('file'), uploadLabReport);
+router.post('/:lab_id/report/:patient_id', authMiddleware('Lab'), upload.single('file'), uploadLabReport);
 router.put('/:lab_id/update',authMiddleware(['Lab']),updateLabDetails);
 router.get('/:lab_id/view', authMiddleware(['Lab']), viewLabDetails);
 

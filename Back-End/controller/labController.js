@@ -122,19 +122,17 @@ exports.viewLabDetails = async (req, res) => {
 exports.uploadLabReport = async (req, res) => {
   try {
     if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No file uploaded" });
+      return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
-    const { patient_id } = req.body;
+    const { blood_pressure, cholesterol_level, sugar_level_before_fasting, sugar_level_after_fasting } = req.body;
     const lab_id = req.params.lab_id;
+    const patient_id = req.params.patient_id;
 
+    // Find the patient and lab by their unique IDs
     const patient = await Patient.findOne({ unique_id: patient_id });
     if (!patient) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Patient not found" });
+      return res.status(404).json({ success: false, message: "Patient not found" });
     }
 
     const lab = await Lab.findOne({ unique_id: lab_id });
@@ -142,31 +140,46 @@ exports.uploadLabReport = async (req, res) => {
       return res.status(404).json({ success: false, message: "Lab not found" });
     }
 
+    // Upload the report file to Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
       resource_type: "auto",
     });
 
     console.log(result);
 
+    // Update the patient's health details
+    patient.blood_pressure = blood_pressure;
+    patient.cholesterol_level = cholesterol_level;
+    patient.sugar_level_before_fasting = sugar_level_before_fasting;
+    patient.sugar_level_after_fasting = sugar_level_after_fasting;
+
+    await patient.save();
+
+    // Create a new LabRecord entry
     const labRecord = await LabRecord.create({
       patient_id: patient.unique_id,
       lab_id: lab.unique_id,
       file_url: result.secure_url,
     });
 
+    // Delete the local file after uploading
     fs.unlinkSync(req.file.path);
 
+    // Respond with success
     res.status(201).json({
       success: true,
-      message: "Lab report uploaded successfully",
+      message: "Lab report uploaded and patient details updated successfully",
       labRecord,
     });
   } catch (error) {
     console.error("Error uploading lab report:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to upload lab report",
+      message: "Failed to upload lab report and update patient details",
       error: error.message,
     });
   }
 };
+
+
+

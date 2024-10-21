@@ -28,7 +28,7 @@
     <form id="reportUploadForm">
         <div class="mb-3">
             <label for="patientId" class="form-label">Patient ID</label>
-            <input type="text" class="form-control" id="patientId" required>
+            <input type="text" class="form-control" id="patientId" required >
         </div>
         <div class="mb-3">
             <label for="reportFile" class="form-label">Select Report File</label>
@@ -61,53 +61,79 @@
 </div>
 
 <script>
-    document.getElementById('reportUploadForm').addEventListener('submit', async function(event) {
-        event.preventDefault(); // Prevent form submission
+    document.addEventListener('DOMContentLoaded', function() {
+        // Retrieve patientId and labId from localStorage
+        const patientId = localStorage.getItem("patient_id");
+        const labId = localStorage.getItem("unique_id");
 
-        const patientId = document.getElementById('patientId').value;
-        const fileInput = document.getElementById('reportFile');
-        const file = fileInput.files[0];
-        const bloodPressure = document.getElementById('bloodPressure').value;
-        const cholesterol = document.getElementById('cholesterol').value;
-        const sugarBefore = document.getElementById('sugarBefore').value;
-        const sugarAfter = document.getElementById('sugarAfter').value;
-
-        if (file) {
-            const formData = new FormData();
-            formData.append('patientId', patientId);
-            formData.append('reportFile', file);
-            formData.append('bloodPressure', bloodPressure);
-            formData.append('cholesterol', cholesterol);
-            formData.append('sugarBefore', sugarBefore);
-            formData.append('sugarAfter', sugarAfter);
-
-            try {
-                const response = await fetch('/api/lab/uploadReport', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    document.getElementById('uploadMessage').innerHTML = '<p class="text-success">Report uploaded successfully!</p>';
-                    drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter);
-                } else {
-                    document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">Failed to upload report. Please try again.</p>';
-                }
-            } catch (error) {
-                console.error('Error uploading report:', error);
-                document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">An error occurred while uploading the report.</p>';
-            }
+        // Automatically set the patientId in the input field (making it read-only)
+        const patientIdInput = document.getElementById('patientId');
+        if (patientId && patientIdInput) {
+            patientIdInput.value = patientId;
+            patientIdInput.readOnly = true; // Make the input read-only so it cannot be edited
         }
-
-        // Reset the form
-        document.getElementById('reportUploadForm').reset();
     });
 
-    // Function to draw the chart
+    document.getElementById('reportUploadForm').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent form submission
+
+    const patientId = document.getElementById('patientId').value;
+    const labId = localStorage.getItem("unique_id");
+    const fileInput = document.getElementById('reportFile');
+    const file = fileInput.files[0];
+    const bloodPressure = document.getElementById('bloodPressure').value;
+    const cholesterol = document.getElementById('cholesterol').value;
+    const sugarBefore = document.getElementById('sugarBefore').value;
+    const sugarAfter = document.getElementById('sugarAfter').value;
+
+    if (file && labId) {
+        const formData = new FormData();
+        formData.append('blood_pressure', bloodPressure);
+        formData.append('cholesterol_level', cholesterol);
+        formData.append('sugar_level_before_fasting', sugarBefore);
+        formData.append('sugar_level_after_fasting', sugarAfter);
+        formData.append('file', file); // Ensure this matches 'upload.single("file")'
+
+        // Construct the correct URL
+        const apiUrl = `http://localhost:5000/api/lab/${labId}/report/${patientId}`;
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}` // Ensure token is included
+                }
+            });
+
+            const responseText = await response.text(); // Get the raw response text
+
+            if (response.ok) {
+                document.getElementById('uploadMessage').innerHTML = '<p class="text-success">Report uploaded successfully!</p>';
+                drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter);
+            } else {
+                console.error('Response error:', responseText); // Log the response text for debugging
+                try {
+                    const errorData = JSON.parse(responseText); // Try parsing the response as JSON
+                    document.getElementById('uploadMessage').innerHTML = `<p class="text-danger">${errorData.message || 'Failed to upload report. Please try again.'}</p>`;
+                } catch (jsonError) {
+                    document.getElementById('uploadMessage').innerHTML = `<p class="text-danger">Error: ${responseText}</p>`; // Fallback to displaying the raw response
+                }
+            }
+        } catch (error) {
+            console.error('Error uploading report:', error);
+            document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">An error occurred while uploading the report.</p>';
+        }
+    }
+
+    // Reset the form
+    document.getElementById('reportUploadForm').reset();
+});
+
+
+    // Function to draw the chart remains unchanged
     function drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter) {
         const ctx = document.getElementById('vitalsChart').getContext('2d');
-
-        // Prepare data for the chart
         const labels = ['Blood Pressure', 'Cholesterol', 'Sugar Before Fasting', 'Sugar After Fasting'];
         const data = [
             parseVital(bloodPressure),
@@ -116,7 +142,6 @@
             parseVital(sugarAfter)
         ];
 
-        // Create the line graph
         const vitalsChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -150,16 +175,16 @@
         });
     }
 
-    // Function to parse the vitals input
     function parseVital(vital) {
-        // Split the input for blood pressure, e.g. "120/80"
         if (vital.includes('/')) {
             return parseInt(vital.split('/')[0]); // Return systolic value
         } else {
-            return parseInt(vital); // Return numeric value directly
+            return parseInt(vital);
         }
     }
 </script>
+
+
 
 </body>
 </html>
