@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Report Page</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light background color */
+            background-image: url("/Elixir/deptbg.jpeg"); /* Background image */
+            background-size: cover; /* Ensures the image covers the entire page */
+            background-position: center; /* Centers the image */
+            background-repeat: no-repeat !important; /* Prevents the image from repeating */
+            height: 100vh; /* Sets the height to 100% of the viewport height */
+            margin: 0; /* Removes default margin */
+        }
+        
+        .container {
+            margin-top: 50px;
+        }
+        h2, h3 {
+            color: #004D40; /* Dark green for headings */
+        }
+        .form-label {
+            color: #004D40; /* Dark green for labels */
+        }
+        .navbar {
+            margin-bottom: 30px; /* Space below navbar */
+        }
+        .department-name {
+            text-align: center; /* Center the text */
+            margin: 30px 0; /* Space around the department name */
+            color: #004D40; /* Dark green color */
+            font-size: 24px; /* Font size for the department name */
+        }
+        .report-card {
+            border: 1px solid #004D40; /* Dark green border */
+            border-radius: 8px; /* Rounded corners */
+            padding: 15px; /* Padding around the card */
+            margin-bottom: 20px; /* Space between cards */
+            background-color: #ffffff; /* White background for report card */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" alt="Elixir Logo" width="30" height="30" class="d-inline-block align-top">
+                Elixir
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="goToHome()">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#services">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contact</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="department-name">
+       <b>Patient Reports</b> 
+    </div>
+
+    <div class="container mt-5">
+        <h2>Your Reports</h2>
+        <div id="reportContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function goToHome() {
+            window.location.href = 'index.html'; // Change 'index.html' to your home page file name
+        }
+
+        // Function to fetch reports from the backend
+        async function fetchReports(patientId) {
+            try {
+                const response = await fetch(`/api/lab/reports/${patientId}`);
+                const reports = await response.json();
+                displayReports(reports);
+            } catch (error) {
+                console.error('Error fetching reports:', error);
+            }
+        }
+
+        // Function to display reports on the page
+        function displayReports(reports) {
+            const reportContainer = document.getElementById('reportContainer');
+            reportContainer.innerHTML = ''; // Clear existing reports
+
+            if (reports.length === 0) {
+                reportContainer.innerHTML = '<p>No reports found.</p>';
+                return;
+            }
+
+            reports.forEach(report => {
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                reportCard.innerHTML = `
+                    <h3>Report ID: ${report._id}</h3>
+                    <p><strong>Details:</strong> ${report.details}</p>
+                    <p><strong>Vitals:</strong> ${report.vitals}</p>
+                    <p><strong>Submitted At:</strong> ${new Date(report.createdAt).toLocaleString()}</p>
+                `;
+                reportContainer.appendChild(reportCard);
+            });
+        }
+
+        // Get the patient ID from the URL (assuming it's passed as a query parameter)
+        const urlParams = new URLSearchParams(window.location.search);
+        const patientId = urlParams.get('patientId');
+        if (patientId) {
+            fetchReports(patientId);
+        } else {
+            document.getElementById('reportContainer').innerHTML = '<p>Invalid Patient ID.</p>';
+        }
+    </script>
+
+</body>
+</html>

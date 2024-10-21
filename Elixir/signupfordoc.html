@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Doctor Signup - Elixir</title>
+    <link rel="stylesheet" href="/Elixir/signup.css" />
+</head>
+<body>
+    <div class="main">
+        <!-- Navigation Bar -->
+        <div class="navbar">
+            <div class="icon">
+                <h2 class="logo">Elixir</h2>
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="#">HOME</a></li>
+                    <li><a href="#">ABOUT</a></li>
+                    <li><a href="#">SERVICE</a></li>
+                    <li><a href="#">CONTACT</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Form Container -->
+    <div class="signup-container">
+        <div class="form-container">
+            <h1>Sign up as Doctor</h1>
+            <form id="signupForm">
+                <input type="text" id="unique_id" placeholder="Medical License ID" required />
+                <input type="text" id="fullname" placeholder="Full Name" required />
+                <input type="email" id="email" placeholder="Email" required />
+                <input type="number" id="age" placeholder="Age" required min="18" max="100" />
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="text" id="specialization" placeholder="Specialization" required />
+                <input type="password" id="password" placeholder="Password" required minlength="6" />
+                <button type="submit">Sign up</button>
+                <p>or <a href="login.html">login</a></p>
+            </form>
+            <div id="notification" style="color: red; margin-top: 20px"></div>
+        </div>
+    </div>
+
+    <!-- Script for form submission -->
+    <script>
+        document
+            .getElementById("signupForm")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent the form from submitting automatically
+                let notification = document.getElementById("notification");
+                notification.innerHTML = ""; // Clear any previous notifications
+
+                // Get form values
+                const unique_id = document.getElementById("unique_id").value.trim();
+                const fullName = document.getElementById("fullname").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const age = parseInt(document.getElementById("age").value);
+                const gender = document.getElementById("gender").value.trim();
+                const specialization = document.getElementById("specialization").value.trim();
+                const password = document.getElementById("password").value;
+
+                // Validate Gender
+                if (!(gender === "Male" || gender === "Female" || gender === "Other")) {
+                    notification.innerHTML = "<p>Please enter a valid gender (Male, Female, Other).</p>";
+                    return;
+                }
+
+                // Proceed with form submission if valid
+                try {
+                    const response = await fetch("http://localhost:5000/api/doctor/signup", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            unique_id,
+                            fullName,
+                            email,
+                            age,
+                            gender,
+                            specialization,
+                            password,
+                        }),
+                    });
+
+                    let result = await response.json();
+
+                    if (response.ok) {
+                        notification.style.color = "green";
+                        notification.innerHTML = "<p>Signup successful!</p>";
+                    } else {
+                        notification.style.color = "red";
+                        notification.innerHTML = `<p>${result.message || "Signup failed!"}</p>`;
+                    }
+                } catch (error) {
+                    notification.style.color = "red";
+                    notification.innerHTML = `<p>An error occurred: ${error.message}</p>`;
+                }
+            });
+    </script>
+</body>
+</html>

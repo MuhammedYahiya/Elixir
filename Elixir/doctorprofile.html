@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Profile - Elixer</title>
+    <link rel="stylesheet" href="/Elixir/doctor.css">
+    <script defer src="doc.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="icon">
+            <h2 class="logo">Elixir</h2>
+        </div>
+        <div class="menu">
+            <ul>
+                <li><a href="#">HOME</a></li>
+                <li><a href="#">ABOUT</a></li>
+                <li><a href="#">SERVICE</a></li>
+                <li><a href="#">CONTACT</a></li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="doctor-profile">
+            <div class="doctor-photo">
+                <img src="doctor-photo-placeholder.png" alt="Doctor Photo">
+            </div>
+            <div class="doctor-details">
+                <h2>DOCTOR PROFILE</h2>
+                <form action="#" id="doctor-form">
+                    <label for="doctor-name">Name:</label>
+                    <input type="text" id="doctor-name" name="doctor-name" placeholder="Enter Doctor's Name" pattern="[A-Za-z\s]+" title="Name should contain only alphabets" required>
+                    
+                    <label for="doctor-age">Age:</label>
+                    <input type="number" id="doctor-age" name="doctor-age" placeholder="Enter Doctor's Age" min="1" max="100" required>
+
+                    <label for="gender">Gender:</label>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="doctor-password">Password:</label>
+                    <input type="password" id="doctor-password" name="doctor-password" placeholder="Enter Password" required>
+                    
+                    <label for="doctor-reg-no">Registration No:</label>
+                    <input type="text" id="doctor-reg-no" name="doctor-reg-no" placeholder="Enter Registration No" required>
+                    
+                    <button type="submit">Save Details</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="patient-access">
+            <h3>To access patient reports:</h3>
+            <form action="#">
+                <label for="patient-id">Enter patient ID:</label>
+                <input type="text" id="patient-id" name="patient-id" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

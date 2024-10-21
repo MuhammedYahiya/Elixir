@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elixir Patient Signup</title>
+    <link rel="stylesheet" href="/Elixir/patsignup.css" />
+  </head>
+  <body>
+    <div class="main">
+      <!-- Navigation Bar -->
+      <div class="navbar">
+        <div class="icon">
+          <h2 class="logo">Elixir</h2>
+        </div>
+        <div class="menu">
+          <ul>
+            <li><a href="#">HOME</a></li>
+            <li><a href="#">ABOUT</a></li>
+            <li><a href="#">SERVICE</a></li>
+            <li><a href="#">CONTACT</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Signup Form -->
+      <div class="signup-container">
+        <h2>SignUp For Patient</h2>
+        <form id="signup-form" onsubmit="return validateForm()">
+          <label for="fullname">Full Name:</label>
+          <input type="text" id="fullname" name="fullname" required />
+
+          <label for="username">Username:</label>
+          <input type="text" id="username" name="username" required />
+
+          <label for="email">Email ID:</label>
+          <input type="email" id="email" name="email" required />
+
+          <label for="dob">Date of Birth:</label>
+          <input type="date" id="dob" name="dob" required />
+
+          <label for="gender">Gender:</label>
+          <select id="gender" name="gender" required>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <label for="mobile">Mobile Number:</label>
+          <input type="text" id="mobile" name="mobile" required />
+
+          <label for="password">Password:</label>
+          <input type="password" id="password" name="password" required />
+
+          <label for="unique_id">Unique ID:</label>
+          <div class="unique-id-container">
+            <input type="text" id="unique-id" name="unique_id" readonly />
+            <button
+              type="button"
+              id="generate-btn"
+              onclick="generateUniqueID()"
+            >
+              Generate ID
+            </button>
+          </div>
+
+          <button type="submit">Submit</button>
+          <p>Already have an account? <a href="/Elixir/login.html">Login</a></p>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      async function generateUniqueID() {
+        let uniqueID =
+          "ELX-" + Math.random().toString(36).substring(2, 11).toUpperCase();
+        document.getElementById("unique-id").value = uniqueID;
+        document.getElementById("generate-btn").disabled = true;
+        alert(
+          "Unique ID generated! Please save this ID for future use: " + uniqueID
+        );
+      }
+
+      async function validateForm() {
+        let fullName = document.getElementById("fullname").value;
+        let username = document.getElementById("username").value;
+        let password = document.getElementById("password").value;
+        let dob = document.getElementById("dob").value;
+        let gender = document.getElementById("gender").value;
+        let mobile = document.getElementById("mobile").value;
+        let email = document.getElementById("email").value;
+        let uniqueID = document.getElementById("unique-id").value;
+
+        if (
+          fullName === "" ||
+          username === "" ||
+          password === "" ||
+          dob === "" ||
+          gender === "" ||
+          mobile === "" ||
+          email === "" ||
+          uniqueID === ""
+        ) {
+          alert("All fields are required!");
+          return false;
+        }
+
+        let mobilePattern = /^[0-9]{10}$/;
+        if (!mobilePattern.test(mobile)) {
+          alert("Please enter a valid 10-digit mobile number.");
+          return false;
+        }
+
+        let emailPattern = /^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+        if (!emailPattern.test(email)) {
+          alert("Please enter a valid email address.");
+          return false;
+        }
+
+        if (password.length < 6) {
+          alert("Password should be at least 6 characters long.");
+          return false;
+        }
+
+        // Send data to backend
+        try {
+          const response = await fetch(
+            "http://localhost:5000/api/patient/signup",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                fullName,
+                username,
+                password,
+                dob,
+                gender,
+                mobile,
+                email,
+                unique_id: uniqueID,
+              }),
+            }
+          );
+
+          if (response.ok) {
+            alert("Signup successful!");
+            return true; // Allow form submission
+          } else {
+            const errorData = await response.json();
+            alert("Signup failed: " + (errorData.message || "Unknown error"));
+            return false; // Prevent form submission
+          }
+        } catch (error) {
+          alert("An error occurred: " + error.message);
+          return false; // Prevent form submission
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('/Elixir/physician.jpg'); /* Replace with your image path */
+    background-size: cover;
+    background-position: center;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 50px;
+    width: 100%;
+    height: 75px;
+    background: rgba(44, 75, 91, 1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  .icon {
+    flex-shrink: 0;
+  }
+  
+  .logo {
+    color: white;
+    font-size: 35px;
+  }
+  
+  .menu {
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
+  }
+  
+  .menu ul {
+    display: flex;
+    list-style: none;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .menu ul li {
+    margin-left: 40px;
+  }
+  
+  .menu ul li a {
+    text-decoration: none;
+    color: white;
+    font-size: 14px;
+    transition: 0.4s ease-in-out;
+  }
+  
+  .menu ul li a:hover {
+    color: black;
+  }
+  
+  /* Signup Container Styling */
+  .signup-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    margin-top: 100px; /* Adjust spacing from the navbar */
+  }
+  
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  form {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .unique-id-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .unique-id-container input {
+    flex-grow: 1;
+  }
+  
+  .unique-id-container button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    margin-left: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .unique-id-container button:hover {
+    background-color: #0069d9;
+  }
+  
+  button[type="submit"] {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0069d9;
+  }
+  
+  p {
+    text-align: center;
+  }
+  
+  a {
+    color: #007bff;
+    text-decoration: none;
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Responsive Styles */
+  @media (max-width: 768px) {
+    .navbar {
+      flex-direction: column;
+      height: auto;
+      padding: 10px;
+    }
+  
+    .menu ul {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  
+    .menu ul li {
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
+  }
+  

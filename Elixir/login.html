@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Elixir Login</title>
+    <link rel="stylesheet" href="/Elixir/login.css" />
+</head>
+<body>
+    <div class="main">
+        <!-- Navigation Bar -->
+        <div class="navbar">
+            <div class="icon">
+                <h2 class="logo">Elixir</h2>
+            </div>
+            <div class="menu">
+                <ul>
+                    <li><a href="#">HOME</a></li>
+                    <li><a href="#">ABOUT</a></li>
+                    <li><a href="#">SERVICE</a></li>
+                    <li><a href="#">CONTACT</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Hero Section Text -->
+        <div class="hero-content">
+            <h1>Welcome to Elixir</h1>
+            <p>Where healthcare meets convenience</p>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="login-container">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="unique_id">Unique ID:</label>
+            <input type="text" id="unique_id" name="unique_id" required />
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required />
+
+            <button type="submit">Login</button>
+            <p>Or <a href="#">Sign Up</a></p>
+        </form>
+    </div>
+
+    <script>
+        document
+            .getElementById("login-form")
+            .addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                let unique_id = document.getElementById("unique_id").value;
+                let password = document.getElementById("password").value;
+
+                // Validate input fields
+                if (unique_id === "") {
+                    alert("Unique ID is required");
+                    return;
+                }
+                if (password === "") {
+                    alert("Password is required");
+                    return;
+                } else if (password.length < 6) {
+                    alert("Password must be at least 6 characters long");
+                    return;
+                }
+
+                try {
+                    const response = await fetch(
+                        "http://localhost:5000/api/auth/login",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ unique_id, password }),
+                        }
+                    );
+
+                    const data = await response.json();
+                    console.log("Login response data:", data); // Debugging line
+
+                    if (data.success) {
+                        // Save the token and unique_id in localStorage
+                        localStorage.setItem("token", data.token);
+                        localStorage.setItem("unique_id", data.user.unique_id);
+                        alert("Login successful");
+
+                        // Check the user type
+                        if (data.user_type === "Doctor") {
+                            window.location.href = "/Elixir/doctorprofile.html"; // Redirect to doctor profile
+                        } else if (data.user_type === "Patient") {
+                            window.location.href = "/Elixir/patientpf.html"; // Redirect to patient profile
+                        } else {
+                            alert("Unknown user type");
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                } catch (error) {
+                    console.error("Error during login:", error);
+                    alert("An error occurred. Please try again.");
+                }
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+body {
+  font-family: Arial, sans-serif;
+  background-image: url('/Elixir/images/labprofile.avif'); /* Replace with your image path */
+  background-size: cover;
+  background-position: center;
+  margin: 0; /* Ensure there's no body margin */
+  padding: 0;
+}
+
+.navbar {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center; /* Ensure vertical alignment */
+  padding: 0 50px; /* Add padding only to the sides */
+  width: 100%;
+  height: 75px; /* Fixed height */
+  margin: auto;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background for better readability */
+  position: fixed; /* Fix the navbar at the top */
+  top: 0;
+  z-index: 1000; /* Ensure navbar stays above other content */
+}
+
+.icon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  color: white;
+  font-size: 35px;
+  margin-right: 20px; /* Add margin between logo and menu */
+}
+
+.menu {
+  display: flex;
+  flex-grow: 1; /* Allow the menu to take the remaining space */
+  justify-content: flex-end; /* Align the list items to the right */
+}
+
+.menu ul {
+  display: flex;
+  list-style: none;
+  justify-content: flex-end;
+  align-items: center; /* Ensure menu items are vertically centered */
+}
+
+.menu ul li {
+  margin-left: 40px;
+}
+
+.menu ul li a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  font-size: 14px;
+  transition: 0.4s ease-in-out;
+}
+
+.menu ul li a:hover {
+  color: black;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+    width: 100%; /* Change from 80% to 100% for full width on smaller screens */
+  }
+}
+
+main {
+  padding: 20px;
+}
+
+.lab-profile {
+  background-color: rgba(44, 75, 91, 0.8); /* Slightly transparent container */
+  padding: 20px; /* Increased padding for better spacing */
+  border-radius: 30px;
+  text-align: center;
+  max-width: 800px; /* Adjust the maximum width as needed */
+  margin: 120px auto 0; /* Adjusted margin for proper spacing */
+  font-size: 18px; /* Adjust the font size as needed */
+  color: white; /* Added text color for better visibility */
+}
+
+.lab-profile h2 {
+  font-size: 24px; /* Adjust the heading font size as needed */
+}
+
+.profile-details {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Aligns the labels to the left */
+  padding-left: 20px; /* Moves the labels slightly to the right */
+}
+
+.profile-details p {
+  display: flex;
+  justify-content: flex-start; /* Ensure the labels and content align properly */
+  width: 100%;
+}
+
+.profile-details p span {
+  margin-left: 20px; /* Adjust this value for more spacing between label and data */
+  font-weight: bold;
+}
+
+.update-report {
+  text-align: center;
+}
+
+.update-report input {
+  width: 200px;
+  padding: 5px;
+}
+
+.update-report button {
+  padding: 10px 20px;
+  background-color: #007
+}

@@ -1,0 +1,135 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #004D40;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-title, .hero-tagline {
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeUp 2s ease-out forwards;
+}
+
+/* Add a delay for the tagline */
+.hero-tagline {
+    animation-delay: 1s;
+}
+
+/* Keyframes for fade-in and slide-up */
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-section h1 {
+    font-size: 4rem;
+    font-weight: bold;
+}
+
+.hero-section p {
+    font-size: 1.5rem;
+}
+
+/* Services Section */
+#services .card {
+    background-color: #004D40;
+    color: white;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add hover effect */
+#services .card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Add touch/active effect */
+#services .card:active {
+    transform: scale(0.98);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Optional hover effect for card content */
+#services .card h3, 
+#services .card p {
+    transition: color 0.3s ease;
+}
+
+#services .card:hover h3, 
+#services .card:hover p {
+    color: #E0F2F1; /* Slight color change for hover effect */
+}
+
+/* About Section */
+#about img {
+    border-radius: 10px;
+}
+/* Testimonials Section */
+.testimonial-card {
+    background-color: #004D40; /* Background color */
+    color: white; /* Text color */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Prevents overflow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover effect */
+}
+
+/* Add hover effect */
+.testimonial-card:hover {
+    transform: translateY(-10px); /* Slightly raise the card on hover */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+}
+
+/* Optional: Change text color on hover */
+.testimonial-card:hover .card-text,
+.testimonial-card:hover .card-title {
+    color: #E0F2F1; /* Change text color on hover */
+}
+
+
+/* Contact Section */
+#contact input,
+#contact textarea {
+    background-color: #E0F2F1;
+    border: none;
+    color: #004D40;
+}
+
+#contact button {
+    background-color: #004D40;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+#contact button:hover {
+    background-color: #00332E;
+}
+
+/* Footer */
+footer {
+    background-color: #004D40;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elixir Lab Profile</title>
+  <link rel="stylesheet" href="/Elixir/labpro.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="icon">
+        <h2 class="logo">Elixir</h2>
+      </div>
+      <div class="menu">
+        <ul>
+          <li><a href="#">HOME</a></li>
+          <li><a href="#">ABOUT</a></li>
+          <li><a href="#">SERVICE</a></li>
+          <li><a href="#">CONTACT</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="lab-profile">
+      <h2>LAB PROFILE</h2>
+      <div class="profile-details">
+        <p>Name: <span id="name">Lab Name</span> <input type="text" id="editName"></p>
+        <p>Branch: <span id="branch">Lab Branch</span> <input type="text" id="editBranch"></p>
+        <p>Address: <span id="address">Lab Address</span> <input type="text" id="editAddress"></p>
+        <p>LabID: <span id="labId">12345</span> <input type="text" id="editLabId"></p>
+        <p>LabREG: <span id="labReg">Lab Registration</span> <input type="text" id="editLabReg"></p>
+      </div>
+      <div class="edit-buttons">
+        <button id="editButton">Edit</button>
+        <button id="saveButton" style="display:none;">Save</button>
+      </div>
+      <div class="update-report">
+        <h3>To update patient reports:</h3>
+        <label>Enter patient ID:</label>
+        <input type="text" id="patientId">
+        <button>Submit</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+  </footer>
+  
+  <script>
+    // labprofile.js
+    document.addEventListener("DOMContentLoaded", () => {
+      const editButton = document.getElementById("editButton");
+      const saveButton = document.getElementById("saveButton");
+
+      editButton.addEventListener("click", () => {
+        // Show input fields
+        document.getElementById("editName").style.display = "inline";
+        document.getElementById("editBranch").style.display = "inline";
+        document.getElementById("editAddress").style.display = "inline";
+        document.getElementById("editLabId").style.display = "inline";
+        document.getElementById("editLabReg").style.display = "inline";
+
+        // Hide spans
+        document.getElementById("name").style.display = "none";
+        document.getElementById("branch").style.display = "none";
+        document.getElementById("address").style.display = "none";
+        document.getElementById("labId").style.display = "none";
+        document.getElementById("labReg").style.display = "none";
+
+        // Set values in input fields
+        document.getElementById("editName").value = document.getElementById("name").innerText;
+        document.getElementById("editBranch").value = document.getElementById("branch").innerText;
+        document.getElementById("editAddress").value = document.getElementById("address").innerText;
+        document.getElementById("editLabId").value = document.getElementById("labId").innerText;
+        document.getElementById("editLabReg").value = document.getElementById("labReg").innerText;
+
+        // Show save button and hide edit button
+        saveButton.style.display = "inline";
+        editButton.style.display = "none";
+      });
+
+      saveButton.addEventListener("click", () => {
+        // Get values from input fields
+        document.getElementById("name").innerText = document.getElementById("editName").value;
+        document.getElementById("branch").innerText = document.getElementById("editBranch").value;
+        document.getElementById("address").innerText = document.getElementById("editAddress").value;
+        document.getElementById("labId").innerText = document.getElementById("editLabId").value;
+        document.getElementById("labReg").innerText = document.getElementById("editLabReg").value;
+
+        // Hide input fields again
+        document.getElementById("editName").style.display = "none";
+        document.getElementById("editBranch").style.display = "none";
+        document.getElementById("editAddress").style.display = "none";
+        document.getElementById("editLabId").style.display = "none";
+        document.getElementById("editLabReg").style.display = "none";
+
+        // Show spans again
+        document.getElementById("name").style.display = "inline";
+        document.getElementById("branch").style.display = "inline";
+        document.getElementById("address").style.display = "inline";
+        document.getElementById("labId").style.display = "inline";
+        document.getElementById("labReg").style.display = "inline";
+
+        // Show edit button and hide save button
+        editButton.style.display = "inline";
+        saveButton.style.display = "none";
+      });
+    });
+  </script>
+</body>
+</html>

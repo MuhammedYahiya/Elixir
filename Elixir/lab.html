@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Report Upload</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Include Chart.js -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        h2, h3 {
+            color: #004D40; /* Dark green for headings */
+        }
+        .form-label {
+            color: #004D40; /* Dark green for labels */
+        }
+        .container {
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Upload Patient Report</h2>
+    <form id="reportUploadForm">
+        <div class="mb-3">
+            <label for="patientId" class="form-label">Patient ID</label>
+            <input type="text" class="form-control" id="patientId" required>
+        </div>
+        <div class="mb-3">
+            <label for="reportFile" class="form-label">Select Report File</label>
+            <input type="file" class="form-control" id="reportFile" accept="application/pdf,image/*" required>
+        </div>
+        <h4>Enter Vitals</h4>
+        <div class="mb-3">
+            <label for="bloodPressure" class="form-label">Blood Pressure (e.g. 120/80)</label>
+            <input type="text" class="form-control" id="bloodPressure" required>
+        </div>
+        <div class="mb-3">
+            <label for="cholesterol" class="form-label">Cholesterol Level</label>
+            <input type="text" class="form-control" id="cholesterol" placeholder="e.g. 180 mg/dL" required>
+        </div>
+        <div class="mb-3">
+            <label for="sugarBefore" class="form-label">Sugar Level Before Fasting</label>
+            <input type="text" class="form-control" id="sugarBefore" placeholder="e.g. 90 mg/dL" required>
+        </div>
+        <div class="mb-3">
+            <label for="sugarAfter" class="form-label">Sugar Level After Fasting</label>
+            <input type="text" class="form-control" id="sugarAfter" placeholder="e.g. 110 mg/dL" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+    <div id="uploadMessage" class="mt-3"></div>
+
+    <!-- Canvas for the line graph -->
+    <h3 class="mt-4">Vitals Spike Graph</h3>
+    <canvas id="vitalsChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+    document.getElementById('reportUploadForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        const patientId = document.getElementById('patientId').value;
+        const fileInput = document.getElementById('reportFile');
+        const file = fileInput.files[0];
+        const bloodPressure = document.getElementById('bloodPressure').value;
+        const cholesterol = document.getElementById('cholesterol').value;
+        const sugarBefore = document.getElementById('sugarBefore').value;
+        const sugarAfter = document.getElementById('sugarAfter').value;
+
+        if (file) {
+            const formData = new FormData();
+            formData.append('patientId', patientId);
+            formData.append('reportFile', file);
+            formData.append('bloodPressure', bloodPressure);
+            formData.append('cholesterol', cholesterol);
+            formData.append('sugarBefore', sugarBefore);
+            formData.append('sugarAfter', sugarAfter);
+
+            try {
+                const response = await fetch('/api/lab/uploadReport', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    document.getElementById('uploadMessage').innerHTML = '<p class="text-success">Report uploaded successfully!</p>';
+                    drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter);
+                } else {
+                    document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">Failed to upload report. Please try again.</p>';
+                }
+            } catch (error) {
+                console.error('Error uploading report:', error);
+                document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">An error occurred while uploading the report.</p>';
+            }
+        }
+
+        // Reset the form
+        document.getElementById('reportUploadForm').reset();
+    });
+
+    // Function to draw the chart
+    function drawChart(bloodPressure, cholesterol, sugarBefore, sugarAfter) {
+        const ctx = document.getElementById('vitalsChart').getContext('2d');
+
+        // Prepare data for the chart
+        const labels = ['Blood Pressure', 'Cholesterol', 'Sugar Before Fasting', 'Sugar After Fasting'];
+        const data = [
+            parseVital(bloodPressure),
+            parseVital(cholesterol),
+            parseVital(sugarBefore),
+            parseVital(sugarAfter)
+        ];
+
+        // Create the line graph
+        const vitalsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Vital Measurements',
+                    data: data,
+                    borderColor: '#004D40',
+                    backgroundColor: 'rgba(0, 77, 64, 0.2)',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Vital Type'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Function to parse the vitals input
+    function parseVital(vital) {
+        // Split the input for blood pressure, e.g. "120/80"
+        if (vital.includes('/')) {
+            return parseInt(vital.split('/')[0]); // Return systolic value
+        } else {
+            return parseInt(vital); // Return numeric value directly
+        }
+    }
+</script>
+
+</body>
+</html>
