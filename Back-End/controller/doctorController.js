@@ -116,3 +116,102 @@ exports.createMedicalRecord = async (req, res) => {
     });
   }
 };
+
+exports.viewDoctorDetails = async (req, res) => {
+  const { doctorId } = req.params; // Using doctorId as the unique_id
+
+  try {
+    // Find the doctor details from the Doctor collection
+    const doctor = await Doctor.findOne({ unique_id: doctorId });
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
+        success: false,
+      });
+    }
+
+    // Find the user details from the User collection, excluding the password
+    const user = await User.findOne({ unique_id: doctorId }, '-password');
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false,
+      });
+    }
+
+    // Combine details from both collections (User and Doctor)
+    const doctorDetails = {
+      unique_id: user.unique_id,
+      user_type: user.user_type,
+      fullName: doctor.fullName,
+      email: doctor.email,
+      age: doctor.age,
+      gender: doctor.gender,
+      specialization: doctor.specialization,
+    };
+
+    return res.status(200).json({
+      message: "Doctor details retrieved successfully",
+      success: true,
+      data: doctorDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching doctor details:", error);
+    return res.status(500).json({
+      message: "Failed to retrieve doctor details",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+exports.editDoctorProfile = async (req, res) => {
+  const { doctorId } = req.params; // Extracting doctorId (which is unique_id) from request parameters
+  const { fullName, email, age, gender, specialization } = req.body; // Extracting the fields that can be updated
+
+  try {
+    // Find the doctor profile using the unique_id
+    const doctor = await Doctor.findOne({ unique_id: doctorId });
+
+    if (!doctor) {
+      return res.status(404).json({
+        message: "Doctor not found",
+        success: false,
+      });
+    }
+
+    // Update the doctor fields with the provided data, if available
+    doctor.fullName = fullName || doctor.fullName;
+    doctor.email = email || doctor.email;
+    doctor.age = age || doctor.age;
+    doctor.gender = gender || doctor.gender;
+    doctor.specialization = specialization || doctor.specialization;
+
+    // Save the updated doctor details
+    await doctor.save();
+
+    return res.status(200).json({
+      message: "Doctor profile updated successfully",
+      success: true,
+      data: {
+        unique_id: doctor.unique_id,
+        fullName: doctor.fullName,
+        email: doctor.email,
+        age: doctor.age,
+        gender: doctor.gender,
+        specialization: doctor.specialization,
+      },
+    });
+  } catch (error) {
+    console.error("Error updating doctor profile:", error);
+    return res.status(500).json({
+      message: "Failed to update doctor profile",
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+
