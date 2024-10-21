@@ -93,8 +93,10 @@
                             window.location.href = "doctorprofile.html"; // Redirect to doctor profile
                         } else if (data.user_type === "Patient") {
                             window.location.href = "patientpf.html"; // Redirect to patient profile
-                        } else {
-                            alert("Unknown user type");
+                        } else if(data.user_type === "Lab"){
+                            window.location.href = "labprofile.html";
+                        }else{
+                            alert("not a valid user")
                         }
                     } else {
                         alert(data.message);

@@ -27,11 +27,10 @@
     <section class="lab-profile">
       <h2>LAB PROFILE</h2>
       <div class="profile-details">
-        <p>Name: <span id="name">Lab Name</span> <input type="text" id="editName"></p>
-        <p>Branch: <span id="branch">Lab Branch</span> <input type="text" id="editBranch"></p>
-        <p>Address: <span id="address">Lab Address</span> <input type="text" id="editAddress"></p>
-        <p>LabID: <span id="labId">12345</span> <input type="text" id="editLabId"></p>
-        <p>LabREG: <span id="labReg">Lab Registration</span> <input type="text" id="editLabReg"></p>
+        <p>Name: <span id="name">Lab Name</span> <input type="text" id="editName" style="display:none;"></p>
+        <p>Branch: <span id="branch">Lab Branch</span> <input type="text" id="editBranch" style="display:none;"></p>
+        <p>Email: <span id="email">Email Address</span> <input type="text" id="editEmail" style="display:none;"></p>
+        <p>LabREG: <span id="labReg">Lab Registration</span> <input type="text" id="editLabReg" style="display:none;"></p>
       </div>
       <div class="edit-buttons">
         <button id="editButton">Edit</button>
@@ -50,31 +49,56 @@
   </footer>
   
   <script>
-    // labprofile.js
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
       const editButton = document.getElementById("editButton");
       const saveButton = document.getElementById("saveButton");
+
+      const token = localStorage.getItem("token");
+      const unique_id = localStorage.getItem("unique_id");
+
+      if (!token || !unique_id) {
+        alert("User not authenticated");
+        return;
+      }
+
+      // Fetch and display lab details when the page loads
+      try {
+        const response = await fetch(`http://localhost:5000/api/lab/${unique_id}/view`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch lab details");
+        }
+
+        const labDetails = await response.json();
+        document.getElementById("name").innerText = labDetails.data.name;
+        document.getElementById("branch").innerText = labDetails.data.branch;
+        document.getElementById("email").innerText = labDetails.data.email;
+        document.getElementById("labReg").innerText = labDetails.data.unique_id; // Assuming labReg is unique_id
+      } catch (error) {
+        console.error("Error fetching lab details:", error);
+      }
 
       editButton.addEventListener("click", () => {
         // Show input fields
         document.getElementById("editName").style.display = "inline";
         document.getElementById("editBranch").style.display = "inline";
-        document.getElementById("editAddress").style.display = "inline";
-        document.getElementById("editLabId").style.display = "inline";
+        document.getElementById("editEmail").style.display = "inline";
         document.getElementById("editLabReg").style.display = "inline";
 
         // Hide spans
         document.getElementById("name").style.display = "none";
         document.getElementById("branch").style.display = "none";
-        document.getElementById("address").style.display = "none";
-        document.getElementById("labId").style.display = "none";
+        document.getElementById("email").style.display = "none";
         document.getElementById("labReg").style.display = "none";
 
         // Set values in input fields
         document.getElementById("editName").value = document.getElementById("name").innerText;
         document.getElementById("editBranch").value = document.getElementById("branch").innerText;
-        document.getElementById("editAddress").value = document.getElementById("address").innerText;
-        document.getElementById("editLabId").value = document.getElementById("labId").innerText;
+        document.getElementById("editEmail").value = document.getElementById("email").innerText;
         document.getElementById("editLabReg").value = document.getElementById("labReg").innerText;
 
         // Show save button and hide edit button
@@ -82,31 +106,54 @@
         editButton.style.display = "none";
       });
 
-      saveButton.addEventListener("click", () => {
+      saveButton.addEventListener("click", async () => {
         // Get values from input fields
-        document.getElementById("name").innerText = document.getElementById("editName").value;
-        document.getElementById("branch").innerText = document.getElementById("editBranch").value;
-        document.getElementById("address").innerText = document.getElementById("editAddress").value;
-        document.getElementById("labId").innerText = document.getElementById("editLabId").value;
-        document.getElementById("labReg").innerText = document.getElementById("editLabReg").value;
+        const updatedLabDetails = {
+          name: document.getElementById("editName").value,
+          branch: document.getElementById("editBranch").value,
+          email: document.getElementById("editEmail").value,
+          unique_id: document.getElementById("editLabReg").value, // Assuming unique_id is entered here
+        };
 
-        // Hide input fields again
-        document.getElementById("editName").style.display = "none";
-        document.getElementById("editBranch").style.display = "none";
-        document.getElementById("editAddress").style.display = "none";
-        document.getElementById("editLabId").style.display = "none";
-        document.getElementById("editLabReg").style.display = "none";
+        // Update lab details
+        try {
+          const response = await fetch(`http://localhost:5000/api/lab/${unique_id}/update`, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(updatedLabDetails)
+          });
 
-        // Show spans again
-        document.getElementById("name").style.display = "inline";
-        document.getElementById("branch").style.display = "inline";
-        document.getElementById("address").style.display = "inline";
-        document.getElementById("labId").style.display = "inline";
-        document.getElementById("labReg").style.display = "inline";
+          if (!response.ok) {
+            throw new Error("Failed to update lab details");
+          }
 
-        // Show edit button and hide save button
-        editButton.style.display = "inline";
-        saveButton.style.display = "none";
+          const updatedLab = await response.json();
+          document.getElementById("name").innerText = updatedLab.data.name;
+          document.getElementById("branch").innerText = updatedLab.data.branch;
+          document.getElementById("email").innerText = updatedLab.data.email;
+          document.getElementById("labReg").innerText = updatedLab.data.unique_id; // Assuming labReg is unique_id
+          
+          // Hide input fields again
+          document.getElementById("editName").style.display = "none";
+          document.getElementById("editBranch").style.display = "none";
+          document.getElementById("editEmail").style.display = "none";
+          document.getElementById("editLabReg").style.display = "none";
+
+          // Show spans again
+          document.getElementById("name").style.display = "inline";
+          document.getElementById("branch").style.display = "inline";
+          document.getElementById("email").style.display = "inline";
+          document.getElementById("labReg").style.display = "inline";
+
+          // Show edit button and hide save button
+          editButton.style.display = "inline";
+          saveButton.style.display = "none";
+        } catch (error) {
+          console.error("Error updating lab details:", error);
+        }
       });
     });
   </script>
