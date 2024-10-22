@@ -1,195 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Doctor Profile</title>
-  <link rel="stylesheet" href="doctor.css">
-</head>
-<body>
-
-<!-- Navigation Bar -->
-<div class="navbar">
-  <div class="icon">
-    <h2 class="logo">Elixir</h2>
-  </div>
-  <div class="menu">
-    <ul>
-      <li><a href="#">HOME</a></li>
-      <li><a href="#">ABOUT</a></li>
-      <li><a href="#">SERVICE</a></li>
-      <li><a href="#">CONTACT</a></li>
-    </ul>
-  </div>
-</div>
-
-<!-- Doctor Profile Section -->
-<div class="container">
-  <h1 class="doctor-title">Doctor Profile</h1>
-  
-  <!-- Profile Card -->
-  <div class="doctor-profile">
-    <div class="doctor-photo">
-      <img id="doctor-photo-preview" src="225-default-avatar-256.png" alt="Doctor Photo">
-      <label for="doctor-photo" class="upload-button">Change Photo</label>
-      <input type="file" id="doctor-photo" accept="image/*" style="display: none;">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Profile</title>
+    <link rel="stylesheet" href="doctor.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+      <div class="icon">
+        <h2 class="logo">Elixir</h2>
+      </div>
+      <div class="menu">
+        <ul>
+          <li><a href="#">HOME</a></li>
+          <li><a href="#">ABOUT</a></li>
+          <li><a href="#">SERVICE</a></li>
+          <li><a href="#">CONTACT</a></li>
+        </ul>
+      </div>
     </div>
-    <h2 class="doctor-name" id="doctor-name-display">Dr. John Doe</h2>
-  </div>
 
-  <!-- Doctor Details (Read-Only View) -->
-  <div id="doctor-details-readonly" class="doctor-details-card">
-    <h3 class="details-heading">Doctor Details</h3>
-    <p><strong>Name:</strong> <span id="doctor-name-readonly">John Doe</span></p>
-    <p><strong>Registration No:</strong> <span id="doctor-reg-no-readonly">123456</span></p>
-    <p><strong>Email:</strong> <span id="email-readonly">johndoe@example.com</span></p>
-    <p><strong>Age:</strong> <span id="age-readonly">30</span></p>
-    <p><strong>Gender:</strong> <span id="gender-readonly">Male</span></p>
-    <p><strong>Specialization:</strong> <span id="specialization-readonly">ENT</span></p>
-    <button id="edit-button" onclick="toggleEditMode()">Edit</button>
-  </div>
+    <!-- Doctor Profile Section -->
+    <div class="container">
+      <h1 class="doctor-title">Doctor Profile</h1>
 
-  <!-- Doctor Details Form (Edit Mode) -->
-  <div id="doctor-details-edit" class="doctor-details-card" style="display:none;">
-    <h3 class="details-heading">Edit Doctor Details</h3>
-    <form id="doctor-form">
-      <p><strong>Name:</strong> <input type="text" id="doctor-name" value="John Doe"></p>
-      <p><strong>Registration No:</strong> <input type="text" id="doctor-reg-no" value="123456" readonly></p>
-      <p><strong>Email:</strong> <input type="text" id="email" value="johndoe@example.com"></p>
-      <p><strong>Age:</strong> <input type="number" id="age" value="30"></p>
-      <p><strong>Gender:</strong>
-        <select id="gender">
-          <option value="Male">Male</option>
-          <option value="Female">Female</option>
-          <option value="Other">Other</option>
-        </select>
-      </p>
-      <p><strong>Specialization:</strong> <input type="text" id="specialization" value="ENT"></p>
-      <button type="button" onclick="saveDetails()">Save</button>
-    </form>
-  </div>
+      <!-- Profile Card -->
+      <div class="doctor-profile">
+        <div class="doctor-photo">
+          <img
+            id="doctor-photo-preview"
+            src="225-default-avatar-256.png"
+            alt="Doctor Photo"
+          />
+          <label for="doctor-photo" class="upload-button">Change Photo</label>
+          <input
+            type="file"
+            id="doctor-photo"
+            accept="image/*"
+            style="display: none"
+          />
+        </div>
+        <h2 class="doctor-name" id="doctor-name-display">Dr. John Doe</h2>
+      </div>
 
-  <!-- Patient ID Section -->
-  <div class="patient-id-section">
-    <h3 class="details-heading">View Patient Profile</h3>
-    <form id="patient-id-form">
-      <p><strong>Patient ID:</strong> <input type="text" id="patient-id" placeholder="Enter Patient ID"></p>
-      <button type="button" onclick="viewPatientProfile()">View Profile</button>
-    </form>
-  </div>
-</div>
+      <!-- Doctor Details (Read-Only View) -->
+      <div id="doctor-details-readonly" class="doctor-details-card">
+        <h3 class="details-heading">Doctor Details</h3>
+        <p>
+          <strong>Name:</strong> <span id="doctor-name-readonly">John Doe</span>
+        </p>
+        <p>
+          <strong>Registration No:</strong>
+          <span id="doctor-reg-no-readonly">123456</span>
+        </p>
+        <p>
+          <strong>Email:</strong>
+          <span id="email-readonly">johndoe@example.com</span>
+        </p>
+        <p><strong>Age:</strong> <span id="age-readonly">30</span></p>
+        <p><strong>Gender:</strong> <span id="gender-readonly">Male</span></p>
+        <p>
+          <strong>Specialization:</strong>
+          <span id="specialization-readonly">ENT</span>
+        </p>
+        <button id="edit-button" onclick="toggleEditMode()">Edit</button>
+      </div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", async () => {
-    // Get doctorId and token from localStorage
-    const doctorId = localStorage.getItem("unique_id"); // Fetching doctorId using unique_id
-    const token = localStorage.getItem("token");
+      <!-- Doctor Details Form (Edit Mode) -->
+      <div
+        id="doctor-details-edit"
+        class="doctor-details-card"
+        style="display: none"
+      >
+        <h3 class="details-heading">Edit Doctor Details</h3>
+        <form id="doctor-form">
+          <p>
+            <strong>Name:</strong>
+            <input type="text" id="doctor-name" value="John Doe" />
+          </p>
+          <p>
+            <strong>Registration No:</strong>
+            <input type="text" id="doctor-reg-no" value="123456" readonly />
+          </p>
+          <p>
+            <strong>Email:</strong>
+            <input type="text" id="email" value="johndoe@example.com" />
+          </p>
+          <p>
+            <strong>Age:</strong> <input type="number" id="age" value="30" />
+          </p>
+          <p>
+            <strong>Gender:</strong>
+            <select id="gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </p>
+          <p>
+            <strong>Specialization:</strong>
+            <input type="text" id="specialization" value="ENT" />
+          </p>
+          <button type="button" onclick="saveDetails()">Save</button>
+        </form>
+      </div>
 
-    if (!doctorId || !token) {
-      alert("You are not logged in. Please log in first.");
-      window.location.href = "login.html"; // Redirect to login page if not logged in
-      return;
-    }
+      <!-- Patient ID Section -->
+      <div class="patient-id-section">
+        <h3 class="details-heading">View Patient Profile</h3>
+        <form id="patient-id-form">
+            <p><strong>Patient ID:</strong> <input type="text" id="patient-id" placeholder="Enter Patient ID"></p>
+            <button type="button" onclick="viewPatientProfile()">View Profile</button>
+        </form>
+    </div>
+    </div>
 
-    // Fetch doctor details on page load
-    try {
-      const response = await fetch(`http://localhost:5000/api/doctor/${doctorId}/view`, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Get doctorId and token from localStorage
+        const doctorId = localStorage.getItem("unique_id"); // Fetching doctorId using unique_id
+        const token = localStorage.getItem("token");
 
-      const data = await response.json();
-      if (data.success) {
-        const doctor = data.data;
-        document.getElementById("doctor-name-display").textContent = "Dr. " + doctor.fullName;
-        document.getElementById("doctor-name-readonly").textContent = doctor.fullName;
-        document.getElementById("doctor-reg-no-readonly").textContent = doctorId; // Display doctorId here
-        document.getElementById("email-readonly").textContent = doctor.email; // Display email
-        document.getElementById("age-readonly").textContent = doctor.age; // Display age
-        document.getElementById("gender-readonly").textContent = doctor.gender; // Display gender
-        document.getElementById("specialization-readonly").textContent = doctor.specialization; // Display specialization
-      } else {
-        alert(data.message || "Failed to load doctor details.");
-      }
-    } catch (error) {
-      console.error("Error fetching doctor details:", error);
-      alert("An error occurred while fetching doctor details.");
-    }
+        if (!doctorId || !token) {
+          alert("You are not logged in. Please log in first.");
+          window.location.href = "login.html"; // Redirect to login page if not logged in
+          return;
+        }
 
-    // Handle photo upload
-    const doctorPhotoInput = document.getElementById("doctor-photo");
-    const doctorPhotoPreview = document.getElementById("doctor-photo-preview");
+        // Fetch doctor details on page load
+        try {
+          const response = await fetch(
+            `http://localhost:5000/api/doctor/${doctorId}/view`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
 
-    doctorPhotoInput.addEventListener("change", (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          doctorPhotoPreview.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
+          const data = await response.json();
+          if (data.success) {
+            const doctor = data.data;
+            document.getElementById("doctor-name-display").textContent =
+              "Dr. " + doctor.fullName;
+            document.getElementById("doctor-name-readonly").textContent =
+              doctor.fullName;
+            document.getElementById("doctor-reg-no-readonly").textContent =
+              doctorId; // Display doctorId here
+            document.getElementById("email-readonly").textContent =
+              doctor.email; // Display email
+            document.getElementById("age-readonly").textContent = doctor.age; // Display age
+            document.getElementById("gender-readonly").textContent =
+              doctor.gender; // Display gender
+            document.getElementById("specialization-readonly").textContent =
+              doctor.specialization; // Display specialization
+          } else {
+            alert(data.message || "Failed to load doctor details.");
+          }
+        } catch (error) {
+          console.error("Error fetching doctor details:", error);
+          alert("An error occurred while fetching doctor details.");
+        }
 
-    // Toggle between edit and readonly mode
-    window.toggleEditMode = () => {
-      document.getElementById("doctor-details-readonly").style.display = "none";
-      document.getElementById("doctor-details-edit").style.display = "block";
-    };
+        // Handle photo upload
+        const doctorPhotoInput = document.getElementById("doctor-photo");
+        const doctorPhotoPreview = document.getElementById(
+          "doctor-photo-preview"
+        );
 
-    // Save details and switch back to readonly mode
-    window.saveDetails = async () => {
-      const name = document.getElementById("doctor-name").value;
-      const regNo = doctorId; // Keep the original reg number
-      const email = document.getElementById("email").value;
-      const age = document.getElementById("age").value;
-      const gender = document.getElementById("gender").value;
-      const specialization = document.getElementById("specialization").value;
-
-      // Prepare data to send to the server
-      const updatedDoctorData = {
-        fullName: name,
-        email: email,
-        age: age,
-        gender: gender,
-        specialization: specialization,
-      };
-
-      try {
-        const response = await fetch(`http://localhost:5000/api/doctor/${doctorId}/edit`, {
-          method: "PUT",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(updatedDoctorData),
+        doctorPhotoInput.addEventListener("change", (event) => {
+          const file = event.target.files[0];
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+              doctorPhotoPreview.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+          }
         });
 
-        const data = await response.json();
-        if (data.success) {
-          // Update the displayed details
-          document.getElementById("doctor-name-readonly").textContent = name;
-          document.getElementById("doctor-name-display").textContent = "Dr. " + name;
-          document.getElementById("email-readonly").textContent = email; // Updated email
-          document.getElementById("age-readonly").textContent = age; // Updated age
-          document.getElementById("gender-readonly").textContent = gender; // Updated gender
-          document.getElementById("specialization-readonly").textContent = specialization; // Updated specialization
+        // Toggle between edit and readonly mode
+        window.toggleEditMode = () => {
+          document.getElementById("doctor-details-readonly").style.display =
+            "none";
+          document.getElementById("doctor-details-edit").style.display =
+            "block";
+        };
 
-          // Switch back to readonly mode
-          document.getElementById("doctor-details-readonly").style.display = "block";
-          document.getElementById("doctor-details-edit").style.display = "none";
-        } else {
-          alert(data.message || "Failed to update doctor details.");
+        // Save details and switch back to readonly mode
+        window.saveDetails = async () => {
+          const name = document.getElementById("doctor-name").value;
+          const regNo = doctorId; // Keep the original reg number
+          const email = document.getElementById("email").value;
+          const age = document.getElementById("age").value;
+          const gender = document.getElementById("gender").value;
+          const specialization =
+            document.getElementById("specialization").value;
+
+          // Prepare data to send to the server
+          const updatedDoctorData = {
+            fullName: name,
+            email: email,
+            age: age,
+            gender: gender,
+            specialization: specialization,
+          };
+
+          try {
+            const response = await fetch(
+              `http://localhost:5000/api/doctor/${doctorId}/edit`,
+              {
+                method: "PUT",
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedDoctorData),
+              }
+            );
+
+            const data = await response.json();
+            if (data.success) {
+              // Update the displayed details
+              document.getElementById("doctor-name-readonly").textContent =
+                name;
+              document.getElementById("doctor-name-display").textContent =
+                "Dr. " + name;
+              document.getElementById("email-readonly").textContent = email; // Updated email
+              document.getElementById("age-readonly").textContent = age; // Updated age
+              document.getElementById("gender-readonly").textContent = gender; // Updated gender
+              document.getElementById("specialization-readonly").textContent =
+                specialization; // Updated specialization
+
+              // Switch back to readonly mode
+              document.getElementById("doctor-details-readonly").style.display =
+                "block";
+              document.getElementById("doctor-details-edit").style.display =
+                "none";
+            } else {
+              alert(data.message || "Failed to update doctor details.");
+            }
+          } catch (error) {
+            console.error("Error updating doctor details:", error);
+            alert("An error occurred while updating doctor details.");
+          }
+        };
+      });
+      function viewPatientProfile() {
+        const patientId = document.getElementById('patient-id').value;
+
+        if (!patientId) {
+            alert("Please enter a valid Patient ID.");
+            return;
         }
-      } catch (error) {
-        console.error("Error updating doctor details:", error);
-        alert("An error occurred while updating doctor details.");
-      }
-    };
-  });
-</script>
-</body>
+
+        // Store the patientId in localStorage
+        localStorage.setItem('patientId', patientId);
+        console.log(patientId);
+        
+        // Redirect to the patient profile page
+        window.location.href = 'patientpf.html';
+    }
+    </script>
+  </body>
 </html>

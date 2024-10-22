@@ -31,10 +31,10 @@ router.get('/:patient_id/prescriptions/:department', authMiddleware(['Patient', 
 
 // Bills
 router.post('/bills/upload', authMiddleware('Patient'), upload.single('file'), uploadBills);
-router.get('/bills', authMiddleware('Patient'), viewUploadedBills);
+router.get('/bills', authMiddleware(['Patient','Doctor']), viewUploadedBills);
 
 // Labs
-router.get('/:patient_id/reports', authMiddleware('Patient'), getPatientLabReports);
+router.get('/:patient_id/reports', authMiddleware(['Patient','Doctor']), getPatientLabReports);
 
 // Admin route
 router.get('/patients/all', authMiddleware(['Doctor', 'Lab']), viewAllPatients);

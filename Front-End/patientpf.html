@@ -1,121 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Patient Profile</title>
-    <link rel="stylesheet" href="patpf.css">
-</head>
-<body>
-
-<!-- Navigation Bar -->
-<div class="navbar">
-    <div class="icon">
+    <link rel="stylesheet" href="patpf.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+      <div class="icon">
         <h2 class="logo">Elixir</h2>
-    </div>
-    <div class="menu">
+      </div>
+      <div class="menu">
         <ul>
-            <li><a href="#">HOME</a></li>
-            <li><a href="#">ABOUT</a></li>
-            <li><a href="#">SERVICE</a></li>
-            <li><a href="#">CONTACT</a></li>
+          <li><a href="#">HOME</a></li>
+          <li><a href="#">ABOUT</a></li>
+          <li><a href="#">SERVICE</a></li>
+          <li><a href="#">CONTACT</a></li>
         </ul>
+      </div>
     </div>
-</div>
 
-<!-- Patient Profile Section -->
-<div class="PatientTitle">
-    <h1 style="color: rgb(251, 248, 248);">Patient Profile</h1>
-</div>
+    <!-- Patient Profile Section -->
+    <div class="PatientTitle">
+      <h1 style="color: rgb(251, 248, 248)">Patient Profile</h1>
+    </div>
 
-<div class="container">
-    <!-- Profile Card -->
-    <div class="profile-card">
+    <div class="container">
+      <!-- Profile Card -->
+      <div class="profile-card">
         <div class="profile-image">
-            <img id="profile-img" src="225-default-avatar-256.png" alt="Profile Image">
-            <label for="file-upload" class="upload-button">Change Photo</label>
-            <input type="file" id="file-upload" accept="image/*" style="display:none;">
+          <img
+            id="profile-img"
+            src="225-default-avatar-256.png"
+            alt="Profile Image"
+          />
+          <label for="file-upload" class="upload-button">Change Photo</label>
+          <input
+            type="file"
+            id="file-upload"
+            accept="image/*"
+            style="display: none"
+          />
         </div>
         <h2 class="profile-name" id="patient-name">Loading...</h2>
-    </div>
+      </div>
 
-    <!-- Patient Details (Read-Only View) -->
-    <div id="patient-details-readonly" class="patient-details-card">
+      <!-- Patient Details (Read-Only View) -->
+      <div id="patient-details-readonly" class="patient-details-card">
         <h3>Patient Details</h3>
-        <p><strong>Username:</strong> <span id="username-readonly">Loading...</span></p>
-        <p><strong>Email:</strong> <span id="email-readonly">Loading...</span></p>
-        <p><strong>Mobile:</strong> <span id="mobile-readonly">Loading...</span></p>
-        <p><strong>Date of Birth:</strong> <span id="dob-readonly">Loading...</span></p>
-        <p><strong>Gender:</strong> <span id="gender-readonly">Loading...</span></p>
-        <p><strong>Profile Public:</strong> <span id="profile-public-readonly">Loading...</span></p>
-        <p><strong>Created At:</strong> <span id="created-at-readonly">Loading...</span></p>
+        <p>
+          <strong>Username:</strong>
+          <span id="username-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Email:</strong> <span id="email-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Mobile:</strong> <span id="mobile-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Date of Birth:</strong>
+          <span id="dob-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Gender:</strong> <span id="gender-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Profile Public:</strong>
+          <span id="profile-public-readonly">Loading...</span>
+        </p>
+        <p>
+          <strong>Created At:</strong>
+          <span id="created-at-readonly">Loading...</span>
+        </p>
+      </div>
     </div>
-</div>
 
-<!-- Right Side Folder Section -->
-<div class="folder-section">
-    <div class="folder-grid">
-        <div class="folder" ><a href="bills.html">Bills</a></div>
+    <!-- Right Side Folder Section -->
+    <div class="folder-section">
+      <div class="folder-grid">
+        <div class="folder"><a href="bills.html">Bills</a></div>
         <div class="folder"><h4>Immunisation</h4></div>
         <div class="folder"><a href="report.html">Reports</a></div>
         <div class="folder"><a href="departments.html">Departments</a></div>
+      </div>
     </div>
-</div>
 
-<!-- Logout Button -->
-<button id="logout-button">Logout</button>
+    <!-- Logout Button -->
+    <button id="logout-button">Logout</button>
 
-<script>
-    async function fetchPatientDetails() {
-        // Fetch the token and patient ID from localStorage
-        const token = localStorage.getItem('token');
-        const patientId = localStorage.getItem('unique_id');
+    <script>
+      async function fetchPatientDetails() {
+        const token = localStorage.getItem("token");
+        const userType = localStorage.getItem("user_type");
+        let patientId;
+
+        if (userType === "Doctor") {
+          patientId = localStorage.getItem("patientId");
+        } else if (userType === "Patient") {
+          patientId = localStorage.getItem("unique_id");
+        }
+
+        console.log("User Type:", userType);
+        console.log("Patient ID:", patientId);
+        console.log("Token:", token);
 
         if (!token || !patientId) {
-            alert("No token or patient ID found. Please log in again.");
-            window.location.href = 'login.html'; // Redirect to login page
-            return;
+          alert("No token or patient ID found. Please log in again.");
+          window.location.href = "login.html";
+          return;
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/patient/${patientId}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                // Populate the profile details
-                document.getElementById('patient-name').innerText = data.patient.fullName || 'N/A';
-                document.getElementById('username-readonly').innerText = data.patient.username || 'N/A';
-                document.getElementById('email-readonly').innerText = data.patient.email || 'N/A';
-                document.getElementById('mobile-readonly').innerText = data.patient.mobile || 'N/A';
-                document.getElementById('dob-readonly').innerText = new Date(data.patient.dob).toLocaleDateString() || 'N/A';
-                document.getElementById('gender-readonly').innerText = data.patient.gender || 'N/A';
-                document.getElementById('profile-public-readonly').innerText = data.patient.is_profile_public ? 'Yes' : 'No';
-                document.getElementById('created-at-readonly').innerText = new Date(data.patient.created_at).toLocaleString() || 'N/A';
-            } else {
-                console.error(data.message);
+          const response = await fetch(
+            `http://localhost:5000/api/patient/${patientId}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
+          );
+
+          const data = await response.json();
+          console.log("API Response:", data);
+
+          if (data.success) {
+            document.getElementById("patient-name").innerText =
+              data.patient.fullName || "N/A";
+            document.getElementById("username-readonly").innerText =
+              data.patient.username || "N/A";
+            document.getElementById("email-readonly").innerText =
+              data.patient.email || "N/A";
+            document.getElementById("mobile-readonly").innerText =
+              data.patient.mobile || "N/A";
+            document.getElementById("dob-readonly").innerText =
+              new Date(data.patient.dob).toLocaleDateString() || "N/A";
+            document.getElementById("gender-readonly").innerText =
+              data.patient.gender || "N/A";
+            document.getElementById("profile-public-readonly").innerText = data
+              .patient.is_profile_public
+              ? "Yes"
+              : "No";
+            document.getElementById("created-at-readonly").innerText =
+              new Date(data.patient.created_at).toLocaleString() || "N/A";
+
+            // Hide edit options if the user is a doctor
+            const editOptions = document.querySelector(".edit-options");
+            if (editOptions) {
+              if (userType === "Doctor") {
+                editOptions.style.display = "none";
+              }
+            } else {
+              console.warn("Edit options element not found.");
+            }
+          } else {
+            console.error(data.message);
+            alert(`Error fetching patient details: ${data.message}`);
+          }
         } catch (error) {
-            console.error('Error fetching patient details:', error);
+          console.error("Error fetching patient details:", error);
+          alert("An error occurred while fetching the patient details.");
         }
-    }
+      }
 
-    document.getElementById('logout-button').addEventListener('click', function() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('patientId');
-        alert("You have logged out.");
-        window.location.href = 'login.html'; // Redirect to login page
-    });
-
-    // Call fetchPatientDetails on page load
-    window.onload = fetchPatientDetails;
-</script>
-
-</body>
+      // Use DOMContentLoaded to ensure elements are loaded before fetching details
+      document.addEventListener("DOMContentLoaded", () => {
+        fetchPatientDetails();
+      });
+    </script>
+  </body>
 </html>

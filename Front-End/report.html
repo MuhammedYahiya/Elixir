@@ -83,15 +83,18 @@
         function goToHome() {
             window.location.href = 'index.html';
         }
-
+    
         async function fetchReports(patientId, token) {
             try {
+                console.log("Fetching reports for Patient ID:", patientId);
                 const response = await fetch(`http://localhost:5000/api/patient/${patientId}/reports`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
                 });
                 const data = await response.json();
+    
+                console.log("API Response:", data); // Log API response
                 
                 if (data.success) {
                     displayReports(data.labReports);
@@ -103,17 +106,17 @@
                 document.getElementById('reportContainer').innerHTML = '<p>Error fetching reports. Please try again later.</p>';
             }
         }
-
+    
         function displayReports(reports) {
             const reportContainer = document.getElementById('reportContainer');
             reportContainer.innerHTML = '';
-
+    
             if (!reports.length) {
                 reportContainer.innerHTML = '<p>No reports found.</p>';
                 return;
             }
-
-            reports.forEach((report, index) => {
+    
+            reports.forEach((report) => {
                 const reportCard = document.createElement('div');
                 reportCard.className = 'report-card';
                 reportCard.innerHTML = `
@@ -126,25 +129,39 @@
                 reportContainer.appendChild(reportCard);
             });
         }
-
+    
         function viewReport(fileUrl) {
             const modalContent = document.getElementById('modalContent');
             modalContent.innerHTML = '';
-
+    
             if (fileUrl.endsWith('.pdf')) {
                 modalContent.innerHTML = `<iframe src="${fileUrl}" width="100%" height="500px"></iframe>`;
             } else {
                 modalContent.innerHTML = `<img src="${fileUrl}" alt="Report Image" class="img-fluid">`;
             }
-
+    
             const reportModal = new bootstrap.Modal(document.getElementById('reportModal'));
             reportModal.show();
         }
-
+    
         document.addEventListener('DOMContentLoaded', () => {
             const token = localStorage.getItem('token');
-            const patientId = localStorage.getItem('unique_id');
-
+            const userType = localStorage.getItem('user_type'); // Get user type from local storage
+            let patientId;
+    
+            console.log("Token:", token);
+            console.log("User Type:", userType);
+    
+            if (userType === 'Doctor') {
+                // If the user is a doctor, get the patient ID from local storage
+                patientId = localStorage.getItem('patientId'); // Make sure to set patient_id when logging in
+            } else  {
+                // If the user is a patient, get their own ID
+                patientId = localStorage.getItem('unique_id');
+            }
+    
+            console.log("Patient ID:", patientId);
+    
             if (patientId && token) {
                 fetchReports(patientId, token);
             } else {
@@ -152,5 +169,7 @@
             }
         });
     </script>
+    
+    
 </body>
 </html>

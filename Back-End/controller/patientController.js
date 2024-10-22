@@ -74,26 +74,26 @@ exports.viewPatientProfile = async (req, res) => {
 
     let patient;
 
+    // Fetch the patient using the provided patient ID or requester's ID if not specified
     if (req.params.patient_id) {
       patient = await Patient.findOne({ unique_id: req.params.patient_id });
     } else {
       patient = await Patient.findOne({ unique_id: requesterId });
     }
 
+    // Check if the patient exists
     if (!patient) {
       return res
         .status(404)
         .json({ message: "Patient not found", success: false });
     }
 
-    if (requesterId === patient.unique_id || patient.is_profile_public) {
+    // Allow access if the requester is the patient themselves or if the requester is a doctor
+    if (requesterId === patient.unique_id || requesterType === "Doctor") {
       return res.status(200).json({ patient, success: true });
     }
 
-    if (requesterType === "Doctor" && patient.is_profile_public) {
-      return res.status(200).json({ patient, success: true });
-    }
-
+    // If neither condition is met, deny access
     return res
       .status(403)
       .json({ message: "Unauthorized access", success: false });
@@ -269,6 +269,17 @@ exports.getPatientLabReports = async (req, res) => {
   const patient_id = req.params.patient_id;
 
   try {
+    // Fetch the patient to check their unique_id
+    const patient = await Patient.findOne({ unique_id: patient_id });
+
+    // Check if the patient exists
+    if (!patient) {
+      return res.status(404).json({
+        success: false,
+        message: "Patient not found.",
+      });
+    }
+
     const labReports = await LabRecord.find({ patient_id });
 
     if (!labReports.length) {
@@ -293,19 +304,21 @@ exports.getPatientLabReports = async (req, res) => {
       createdAt: report.createdAt,
     }));
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       labReports: formattedReports,
     });
   } catch (error) {
     console.error("Error fetching lab reports:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Failed to fetch lab reports",
       error: error.message,
     });
   }
 };
+
+
 
 exports.uploadBills = async (req, res) => {
   try {

@@ -79,8 +79,8 @@
     </div>
 
     <div class="container mt-5">
-        <h2>Upload Prescription</h2>
-        <form id="uploadForm">
+        <h2 style="display: none;">Upload Prescription</h2>
+        <form id="uploadForm" style="display: none;"> <!-- Hide upload form for doctors -->
             <div class="mb-3">
                 <label for="prescriptionImage" class="form-label">Select Prescription Image</label>
                 <input type="file" class="form-control" id="prescriptionImage" accept="image/*" required>
@@ -109,14 +109,25 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const patientId = localStorage.getItem('unique_id'); // Replace with actual patient ID
-        const department = 'GeneralMedicine'; // Set the department
+        const token = localStorage.getItem('token');
+        const userType = localStorage.getItem('user_type'); // Get user type from local storage
+        let patientId;
+
+        console.log("Token:", token);
+        console.log("User Type:", userType);
+
+        if (userType === 'Doctor') {
+            // If the user is a doctor, get the patient ID from local storage
+            patientId = localStorage.getItem('patientId'); // Ensure patientId is set when logging in as a doctor
+        } else {
+            // If the user is a patient, get their own ID
+            patientId = localStorage.getItem('unique_id');
+        }
 
         // Fetch existing prescriptions when the page loads
         async function fetchPrescriptions() {
             try {
-                const token = localStorage.getItem('token'); // Adjust this as necessary
-                const response = await fetch(`http://localhost:5000/api/patient/${patientId}/prescriptions/${department}`, {
+                const response = await fetch(`http://localhost:5000/api/patient/${patientId}/prescriptions/GeneralMedicine`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -144,6 +155,11 @@
 
                             uploadedImagesContainer.appendChild(imgElement);
                         });
+
+                        // Show the upload form only if the user is a patient
+                        if (userType === 'Patient') {
+                            document.getElementById('uploadForm').style.display = 'block';
+                        }
                     } else {
                         console.error(data.message); // Handle no records found
                     }
@@ -166,10 +182,8 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                const token = localStorage.getItem('token'); // Adjust this as necessary
-
                 try {
-                    const response = await fetch(`http://localhost:5000/api/patient/prescriptions/upload/${department}`, {
+                    const response = await fetch(`http://localhost:5000/api/patient/prescriptions/upload/GeneralMedicine`, {
                         method: 'POST',
                         body: formData,
                         headers: {
