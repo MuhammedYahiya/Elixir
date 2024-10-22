@@ -31,7 +31,8 @@
 
 <div class="container">
     <h2>Bills</h2>
-    <form id="billUploadForm">
+
+    <form id="billUploadForm" style="display: none;"> <!-- Hide upload form for doctors -->
         <div class="mb-3">
             <label for="billFile" class="form-label">Select Bill File</label>
             <input type="file" class="form-control" id="billFile" name="file" accept="application/pdf,image/*" required>
@@ -42,10 +43,67 @@
         </div>
         <button type="submit" class="btn btn-primary">Upload</button>
     </form>
+
     <div id="uploadMessage" class="mt-3"></div>
+
+    <h3>Uploaded Bills</h3>
+    <ul id="billsList" class="list-group"></ul> <!-- To display the bills -->
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+        const token = localStorage.getItem('token');
+        const userType = localStorage.getItem('user_type'); // Get user type from local storage
+        let patientId;
+
+        console.log("Token:", token);
+        console.log("User Type:", userType);
+
+        if (userType === 'Doctor') {
+            // If the user is a doctor, get the patient ID from local storage
+            patientId = localStorage.getItem('patientId'); // Ensure to set patient_id when logging in
+        } else {
+            // If the user is a patient, get their own ID
+            patientId = localStorage.getItem('unique_id');
+            document.getElementById('billUploadForm').style.display = 'block'; // Show the upload form for patients
+        }
+
+        // Fetch uploaded bills
+        try {
+            const response = await fetch(`http://localhost:5000/api/patient/${patientId}/bills`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}` // Include the token in the headers
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const billsList = document.getElementById('billsList');
+
+                if (data.success && data.bills.length) {
+                    data.bills.forEach(bill => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        listItem.innerHTML = `
+                            <a href="${bill.bill_url}" target="_blank">${bill.bill_id}</a>
+                            <span>${new Date(bill.createdAt).toLocaleDateString()}</span>
+                        `;
+                        billsList.appendChild(listItem);
+                    });
+                } else {
+                    billsList.innerHTML = '<li class="list-group-item">No bills found.</li>';
+                }
+            } else {
+                console.error('Failed to fetch bills:', response.statusText);
+                document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">Failed to fetch bills.</p>';
+            }
+        } catch (error) {
+            console.error('Error fetching bills:', error);
+            document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">An error occurred while fetching bills.</p>';
+        }
+    });
+
     document.getElementById('billUploadForm').addEventListener('submit', async function(event) {
         event.preventDefault(); // Prevent form submission
 
@@ -72,6 +130,8 @@
 
                 if (response.ok) {
                     document.getElementById('uploadMessage').innerHTML = '<p class="text-success">Bill uploaded successfully!</p>';
+                    // Optionally, refresh the list of bills here
+                    location.reload(); // Reload to see the new bill
                 } else {
                     document.getElementById('uploadMessage').innerHTML = '<p class="text-danger">Failed to upload bill. Please try again.</p>';
                 }

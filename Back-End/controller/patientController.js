@@ -370,14 +370,17 @@ exports.uploadBills = async (req, res) => {
 
 exports.viewUploadedBills = async (req, res) => {
   try {
-    const patientId = req.user.id; 
+    // Get patientId from route parameters
+    const patientId = req.params.patient_id; 
 
+    // Fetch bills associated with the patientId
     const bills = await Bill.find({ patient_id: patientId });
 
     if (!bills.length) {
       return res.status(404).json({ success: false, message: "No bills found for this patient." });
     }
 
+    // Format bills for response
     const formattedBills = bills.map(bill => ({
       bill_id: bill._id,
       bill_url: bill.bill,
